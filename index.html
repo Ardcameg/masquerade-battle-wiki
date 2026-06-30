@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>マスカレード・バトル Wiki</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loader">
+            <h1 class="loader-title">Masquerade Battle</h1>
+        </div>
+    </div>
+
+    <div id="app">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>Masquerade<br>Battle</h1>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="#home" class="nav-link">Top (概要)</a></li>
+                    <li><a href="#rules" class="nav-link">基本ルール</a></li>
+                    <li><a href="#advanced-rules" class="nav-link" style="font-size: 0.8rem; margin-top: -0.3rem;">詳細なゲーム仕様・裁定</a></li>
+                </ul>
+                <div class="nav-section">
+                    <h3>Roles (役職)</h3>
+                    <ul id="nav-roles">
+                        <!-- Populated by JS -->
+                    </ul>
+                </div>
+                <div class="nav-section">
+                    <h3>Skills (スキル)</h3>
+                    <ul id="nav-skills">
+                        <!-- Populated by JS -->
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <div id="content-container" class="content-container">
+                <!-- Dynamic Content injected here -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Data and Script -->
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
