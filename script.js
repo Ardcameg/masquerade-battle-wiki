@@ -100,10 +100,8 @@ function initNavigation() {
         roles.forEach(role => {
             const li = document.createElement('li');
             
-            // Build detailed tooltip
-            let tooltip = `【勝利条件】\n${role.victory}`;
-            if (role.skill) tooltip += `\n\n【スキル】\n${role.skill}`;
-            if (role.passive) tooltip += `\n\n【永続効果】\n${role.passive}`;
+            // Build simplified tooltip
+            let tooltip = role.summary;
             
             li.innerHTML = `<a href="#role/${role.id}" class="nav-link" data-id="role/${role.id}" data-color="${catColor}" title="${tooltip}">
                 ${role.name} <span style="font-size: 0.65rem; opacity: 0.5; margin-left: 5px;">${role.enName}</span>
@@ -281,10 +279,10 @@ function renderRules(container) {
             <h4>3. プレイヤーターン</h4>
             <p>自分のターンでは、以下のいずれか <strong>1つ</strong> を行い、ターンを終了します（何もできない場合は「パス」となります）。</p>
             <ul class="rules-list">
-                <li><strong>スキルカードを使う:</strong> 一度使ったら、自分の前においておく。（[迅速]効果のあるカードは使用後に追加で1つアクションが可能）</li>
+                <li><strong>スキルカードを使う:</strong> 一度使ったら、[消滅] の有無に関わらず自分の前においておく。（[迅速]効果のあるカードは使用後に追加で1つアクションが可能）</li>
                 <li><strong>スキルカードを回収する:</strong> 自分の前にあるスキルカードを手札に戻す。※[消滅] のついたカードは回収できない。</li>
-                <li><strong>カードを引く:</strong> 山札から1枚引き、手札から1枚捨てる。（山札が切れたら捨て札をシャッフルして山札にする）</li>
-                <li><strong>他プレイヤーを攻撃する:</strong> 体力が1以上の他プレイヤー1人に1ダメージを与える。（体力が0のプレイヤーには攻撃できない）</li>
+                <li><strong>カードを引く:</strong> 山札から1枚引き、手札から1枚捨てる。（山札が切れたら捨て札をシャッフルして新しい山札にする）</li>
+                <li><strong>他プレイヤーを攻撃する:</strong> 他プレイヤー1人を攻撃し、1ダメージを与える。（体力が0のプレイヤーには攻撃できない）</li>
             </ul>
             <div style="margin-top: 1rem; padding: 1rem; background: rgba(196, 161, 90, 0.05); border-left: 3px solid var(--border-accent);">
                 <h4 style="color: var(--border-accent); font-family: var(--font-heading); margin-bottom: 0.5rem;">※役職カードの公開について</h4>
@@ -299,7 +297,7 @@ function renderRules(container) {
             <h4>4. ラウンド終了 〜 ゲーム終了</h4>
             <ul class="rules-list">
                 <li>ターンが一周したら、スタートプレイヤーの左隣のプレイヤーが新しいスタートプレイヤーとなり、次ラウンドを始める。</li>
-                <li>プレイヤーが「自分だけ生き残る」または「公開している役職の固有勝利条件を満たす」のいずれかを達成した時点でゲーム終了となる。</li>
+                <li>プレイヤーが「自分だけ生き残る」または「公開されている役職の固有勝利条件を満たす」のいずれかを達成した時点でゲーム終了となる。</li>
             </ul>
         </div>
 
@@ -419,19 +417,20 @@ function renderAdvancedRules(container) {
         <ul class="rules-list">
             <li><strong>最大体力:</strong> ゲーム開始時に配られた2枚の役職（公開用・非公開用）の「最大HP」を合計した数値が、そのプレイヤーの初期の最大体力となります（おおよそ8〜10になります）。</li>
             <li>役職をまったく公開していないプレイヤーの最大体力は、暫定的に「5」として扱います。</li>
-            <li><strong>体力の受け継ぎ:</strong> 役職が交換されたとき、現在の体力をそのまま受け継ぎます。ただし、受け継いだ体力が新しい最大体力を上回っていた場合のみ、最大体力と同じ値に切り捨てられます。</li>
+            <li><strong>体力の入れ替え:</strong> 体力が入れ替わったとき、最大体力を体力が上回った場合のみ、最大体力へ切り捨てます。</li>
         </ul>
 
-        <h2>テキストの対象指定に関する裁定</h2>
+        <h2>テキストの対象指定・定義に関する裁定</h2>
         <ul class="rules-list">
             <li><strong>全員:</strong> 人数が明記されていない限り、盤面にいるすべてのプレイヤーを指します。</li>
             <li><strong>自分を含むか:</strong> 「他」と書いていなければ、条件を満たしている限り自分自身も対象に含みます。</li>
             <li><strong>自分:</strong> 特に明記されていない限り、「自分」とはそのカードを所持・使用しているプレイヤー自身を指します。</li>
+            <li><strong>受けているダメージ:</strong> 「最大体力」から「現在の体力」を引いた値を指します。</li>
         </ul>
 
         <h2>その他の特殊裁定</h2>
         <ul class="rules-list">
-            <li><strong>役職の非公開状態:</strong> 公開していない役職の【永続】効果は発動せず、【固有勝利条件】は条件を満たしていても勝利することができません。</li>
+            <li><strong>役職の有効条件:</strong> 役職の【固有勝利】【スキル】【永続】は、そのカードが公開されている場合のみ有効となります。（非公開状態では発動しません）</li>
             <li><strong>全体攻撃:</strong> 全体攻撃は「全員」を対象とするため、自分自身もダメージを受けます（「他のすべての」と記載されている場合は例外です）。</li>
         </ul>
 
