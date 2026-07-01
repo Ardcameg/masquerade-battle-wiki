@@ -12,6 +12,15 @@ document.addEventListener('DOMContentLoaded', () => {
     initNavigation();
     handleRoute();
     window.addEventListener('hashchange', handleRoute);
+
+    const hamburger = document.getElementById('hamburger');
+    const sidebar = document.getElementById('sidebar');
+    if (hamburger && sidebar) {
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            sidebar.classList.toggle('open');
+        });
+    }
 });
 
 // Maps Japanese category names to CSS classes
@@ -148,21 +157,49 @@ function handleRoute() {
     if (!hash) hash = 'home';
 
     // Update active nav link
+    const highlight = document.getElementById('nav-highlight');
+    let foundActive = false;
+
     document.querySelectorAll('.nav-link').forEach(link => {
         link.classList.remove('active');
-        link.style.borderLeftColor = "transparent";
         link.style.color = "var(--text-muted)";
-        link.style.backgroundColor = "transparent";
+        // reset inline styles from previous version
+        link.style.borderLeftColor = "";
+        link.style.backgroundColor = "";
         
         if (link.getAttribute('href') === `#${hash}`) {
             link.classList.add('active');
             const color = link.getAttribute('data-color') || "var(--border-accent)";
-            link.style.borderLeftColor = color;
             link.style.color = "var(--text-main)";
-            // Add subtle background highlight for active link
-            link.style.backgroundColor = "rgba(255, 255, 255, 0.03)";
+            foundActive = true;
+            
+            if (highlight) {
+                // Ensure layout is complete before measuring
+                setTimeout(() => {
+                    const navContainer = document.querySelector('.sidebar-nav');
+                    const linkRect = link.getBoundingClientRect();
+                    const containerRect = navContainer.getBoundingClientRect();
+                    const topPos = linkRect.top - containerRect.top + navContainer.scrollTop;
+                    
+                    highlight.style.opacity = '1';
+                    highlight.style.transform = `translateY(${topPos}px)`;
+                    highlight.style.borderLeftColor = color;
+                }, 10);
+            }
         }
     });
+
+    if (!foundActive && highlight) {
+        highlight.style.opacity = '0';
+    }
+
+    // Close mobile menu if open
+    const sidebar = document.getElementById('sidebar');
+    const hamburger = document.getElementById('hamburger');
+    if (sidebar && sidebar.classList.contains('open')) {
+        sidebar.classList.remove('open');
+        hamburger.classList.remove('active');
+    }
 
     const container = document.getElementById('content-container');
     
@@ -396,8 +433,12 @@ function renderAdvancedRules(container) {
         <ul class="rules-list">
             <li><strong>役職の非公開状態:</strong> 公開していない役職の【永続】効果は発動せず、【固有勝利条件】は条件を満たしていても勝利することができません。</li>
             <li><strong>全体攻撃:</strong> 全体攻撃は「全員」を対象とするため、自分自身もダメージを受けます（「他のすべての」と記載されている場合は例外です）。</li>
-            <li><strong>[消滅] カードの扱い:</strong> [消滅] カードは使用しても捨て札にはならず、自分の前においておきます。手札への回収はできませんが、「他プレイヤーの前にあるカードを選ぶ」効果（例：スキル20など）の対象として選択することは可能です。</li>
-            <li><strong>クロノスの処理:</strong> パッシブ効果により体力が0になっても即座には脱落しませんが、ラウンドが終了する前に何らかの手段で体力を1以上に回復した場合、そのまま脱落せずにゲームを続行します。</li>
+        </ul>
+
+        <h2>カード効果のキーワード</h2>
+        <ul class="rules-list">
+            <li><strong>[消滅]:</strong> 一度使用すると自分の前に置かれ、「手札への回収」ができなくなります。捨て札にはならず場に残るため、「他プレイヤーの前にあるカードを選ぶ」効果（例：スキル20など）の対象にすることは可能です。</li>
+            <li><strong>[迅速]:</strong> この属性を持つスキルカードを使用した直後、自身はターンを終了せず「追加で1つアクション」を行うことができます。（連続行動が可能になります）</li>
         </ul>
     `;
 }
