@@ -277,19 +277,19 @@ function renderRules(container) {
         </div>
         <div class="ability-section">
             <h4>3. プレイヤーターン</h4>
-            <p>自分のターンでは、以下のいずれか <strong>1つ</strong> を行い、ターンを終了します（何もできない場合は「パス」となります）。</p>
+            <p>自分のターンでは、以下のアクションから <strong>1つ</strong> を選んで行います。行ったなら、ターンを終了し、次のプレイヤーのターンになります（何の行動もできない場合は「パス」となります）。</p>
             <ul class="rules-list">
-                <li><strong>スキルカードを使う:</strong> 一度使ったら、[消滅] の有無に関わらず自分の前においておく。（[迅速]効果のあるカードは使用後に追加で1つアクションが可能）</li>
-                <li><strong>スキルカードを回収する:</strong> 自分の前にあるスキルカードを手札に戻す。※[消滅] のついたカードは回収できない。</li>
-                <li><strong>カードを引く:</strong> 山札から1枚引き、手札から1枚捨てる。（山札が切れたら捨て札をシャッフルして新しい山札にする）</li>
-                <li><strong>他プレイヤーを攻撃する:</strong> 他プレイヤー1人を攻撃し、1ダメージを与える。（体力が0のプレイヤーには攻撃できない）</li>
+                <li><strong>A. スキルカードを使う:</strong> 一度使ったら、[消滅] の有無に関わらず自分の前においておく。（[迅速]効果のあるカードは使用後に追加で1つアクションが可能）</li>
+                <li><strong>B. スキルカードを回収する:</strong> 自分の前にあるスキルカードを手札に戻す。※[消滅] のついたカードは回収できない。</li>
+                <li><strong>C. カードを引く:</strong> 山札から1枚スキルカードを引き、手札からスキルカードを1枚捨てる。（山札が切れたら捨て札をシャッフルして新しい山札にする）</li>
+                <li><strong>D. 他プレイヤーを「攻撃」する:</strong> 他プレイヤー1人を「攻撃」し、1ダメージを与える。（体力が0のプレイヤーには「攻撃」できない）</li>
             </ul>
             <div style="margin-top: 1rem; padding: 1rem; background: rgba(196, 161, 90, 0.05); border-left: 3px solid var(--border-accent);">
                 <h4 style="color: var(--border-accent); font-family: var(--font-heading); margin-bottom: 0.5rem;">※役職カードの公開について</h4>
                 <p style="font-size: 0.9rem; line-height: 1.6;">
-                    上記のアクションとは別に、自分のターン中であれば<strong>いつでも（アクションの前でも後でも）</strong>、裏向きに伏せている役職カードを1枚公開することができます。<br>
-                    公開した役職に【スキル】がある場合、公開と同時にそのスキルが発動します。<br>
-                    また、公開することで初めてその役職の【永続】効果や【固有勝利条件】が有効になります（非公開状態では発動・適用されません）。
+                    上記のアクションとは別に、効果の処理中でなければ、自分のターン中に<strong>いつでも</strong>役職カードを1枚公開することができます。<br>
+                    非公開状態から公開状態になった時、【スキル】があるなら発動します。<br>
+                    また、公開している間、その役職の【固有勝利】や【永続】が有効になります（非公開状態では発動・適用されません）。
                 </p>
             </div>
         </div>
@@ -381,8 +381,8 @@ function renderSkill(container, skill) {
                 </div>
                 <div class="badges">
                     <span class="badge ${catClass}">${skill.category}</span>
-                    ${skill.ephemeral ? `<span class="badge ephemeral">消滅</span>` : ''}
-                    ${skill.fast ? `<span class="badge fast">迅速</span>` : ''}
+                    ${skill.ephemeral ? `<span class="badge ephemeral" title="このスキルカードは回収できない">消滅</span>` : ''}
+                    ${skill.fast ? `<span class="badge fast" title="このスキルカードの使用後追加でアクションを行う">迅速</span>` : ''}
                 </div>
             </div>
             
@@ -432,6 +432,7 @@ function renderAdvancedRules(container) {
         <ul class="rules-list">
             <li><strong>役職の有効条件:</strong> 役職の【固有勝利】【スキル】【永続】は、そのカードが公開されている場合のみ有効となります。（非公開状態では発動しません）</li>
             <li><strong>全体攻撃:</strong> 全体攻撃は「全員」を対象とするため、自分自身もダメージを受けます（「他のすべての」と記載されている場合は例外です）。</li>
+            <li><strong>スキル16:</strong> 対象を指定できる効果などは、2回分の処理ごとにその都度指定し直すことができます。</li>
         </ul>
 
         <h2>カード効果のキーワード</h2>
