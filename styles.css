@@ -452,7 +452,7 @@ p {
 .rules-list li, .wiki-list li {
     margin-bottom: 0.5rem;
     font-size: 0.95rem;
-    color: var(--text-muted);
+    color: var(--text-main);
 }
 
 .wiki-list li {
@@ -531,4 +531,18 @@ p {
     .stat-row { gap: 1.5rem; }
     h1.page-title { font-size: 2rem; }
     .detail-card { padding: 1.5rem; }
+}
+
+.keyword-damage {
+    color: #ff4a4a;
+    font-weight: bold;
+    border-bottom: 1px dashed #ff4a4a;
+    cursor: help;
+}
+
+.keyword-heal {
+    color: #4ade80;
+    font-weight: bold;
+    border-bottom: 1px dashed #4ade80;
+    cursor: help;
 }

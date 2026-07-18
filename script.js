@@ -72,6 +72,11 @@ function autoLink(text) {
         result = result.replace(regex, `<a href="#skill/${s.id}" class="inline-link">「スキル${sNum}」</a>`);
     });
     
+    
+    // Process Keywords
+    result = result.replace(/\[ダメージ\](\d+)/g, '<span class="keyword-damage" title="[ダメージ]X: Xの分だけダメージを受ける">[ダメージ]$1</span>');
+    result = result.replace(/\[回復\](\d+)/g, '<span class="keyword-heal" title="[回復]X: Xの分だけ回復する">[回復]$1</span>');
+
     return result;
 }
 
@@ -152,7 +157,7 @@ function initNavigation() {
 
 function handleRoute() {
     let hash = window.location.hash.substring(1);
-    if (!hash) hash = 'home';
+    if (!hash) hash = 'rules';
 
     // Update active nav link
     const highlight = document.getElementById('nav-highlight');
@@ -206,9 +211,7 @@ function handleRoute() {
     void container.offsetWidth; // force reflow
     container.classList.add('fade-in');
 
-    if (hash === 'home') {
-        renderHome(container);
-    } else if (hash === 'rules') {
+    if (hash === 'rules') {
         renderRules(container);
     } else if (hash === 'advanced-rules') {
         renderAdvancedRules(container);
@@ -230,42 +233,30 @@ function handleRoute() {
     document.querySelector('.main-content').scrollTop = 0;
 }
 
-function renderHome(container) {
-    container.innerHTML = `
-        <h1 class="page-title">Masquerade Battle</h1>
-        <p>「マスカレード・バトル」のルールWikiへようこそ。本作は3〜4人用の正体隠匿系バトルロイヤルカードゲームです。</p>
-        <div class="detail-card" style="margin-top: 1.5rem;">
-            <h2>ゲームの概要</h2>
-            <p>各プレイヤーは固有の能力と勝利条件を持つ「役職カード」を隠し持ち、スキルカードを駆使して他のプレイヤーの体力を0にすることを目指します。最後まで生き残るか、自身の「固有勝利条件」を満たしたプレイヤーが勝者となります。</p>
-            <div class="stat-row" style="margin-top: 1.5rem;">
-                <div class="stat-item">
-                    <span class="stat-label">プレイ人数</span>
-                    <span class="stat-value">3〜4人</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-value">32枚 (役職10枚 / スキル18枚 / 体力管理カード4枚)</span>
-                </div>
-            </div>
-            <p style="margin-top: 1rem; color: var(--border-accent);">左のメニューから、詳しいルールや各カードの詳細を確認してください。</p>
-        </div>
-    `;
-}
-
 function renderRules(container) {
     container.innerHTML = `
         <h1 class="page-title">Rules & Mechanics</h1>
+        <p>「マスカレード・バトル」は、3〜4人用の正体隠匿系バトルロイヤルカードゲームです（カード全32枚）。<br>
+        各プレイヤーは固有の能力を持つ「役職」を隠し持ち、スキルカードを駆使して他のプレイヤーの体力を0にすることを目指します。</p>
         
         <h2>ゲームの目的 / 勝利条件</h2>
-        <p>基本となる勝利条件は <strong>「すべての他プレイヤーの体力を0にすること（最後まで生き残ること）」</strong> です。<br>
-        ただし、各役職には「固有勝利条件」が設定されており、それを満たすことでも勝利となります。</p>
+        <p>以下のどちらかを満たせば勝利となりゲームが終了します。</p>
+        <ul class="rules-list">
+            <li>すべての他プレイヤーの体力を0にする（自分だけ生き残る）。</li>
+            <li>公開されている自身の役職の「固有勝利条件」を満たす。</li>
+        </ul>
 
         <h2>ゲームの流れ</h2>
         <div class="ability-section">
             <h4>1. ゲーム開始処理</h4>
             <ul class="rules-list">
-                <li>役職カードをシャッフルして、1人2枚ずつ分ける。</li>
-                <li>スキルカードをシャッフルし、1人3枚ずつ分ける。（余りは山札）</li>
-                <li>プレイヤーは、役職カードのうち、1枚を選んで公開する。</li>
+                <li>役職カードをシャッフルして、1人2枚ずつ分け、自分の前に置く。</li>
+                <li>スキルカードをシャッフルし、1人3枚ずつ手札として分ける。（余りは中央に置き、山札とする）</li>
+                <li>サマリーカードを各プレイヤーに配る。</li>
+                <li>プレイヤーは、役職カードのうち、1枚を選んで公開する。<br>
+                    <span style="font-size: 0.9em; color: var(--text-muted);">※各プレイヤーの最大体力は、所持する役職カード2枚の最大体力の合計です。<br>
+                    ※非公開の役職の最大体力は常に「5」として扱います。</span>
+                </li>
             </ul>
         </div>
         <div class="ability-section">
@@ -277,134 +268,46 @@ function renderRules(container) {
         </div>
         <div class="ability-section">
             <h4>3. プレイヤーターン</h4>
-            <p>自分のターンでは、以下のアクションから <strong>1つ</strong> を選んで行います。行ったなら、ターンを終了し、次のプレイヤーのターンになります（何の行動もできない場合は「パス」となります）。</p>
+            <p>自分のターンでは、以下のアクションから <strong>1つ</strong> を選んで行います。行ったなら、ターンを終了し、次のプレイヤーのターンになります（何の行動もできない場合は「パス」となります。そうでない場合、必ず行動を行います）。</p>
             <ul class="rules-list">
-                <li><strong>A. スキルカードを使う:</strong> 一度使ったら、[消滅] の有無に関わらず自分の前においておく。（[迅速]効果のあるカードは使用後に追加で1つアクションが可能）</li>
-                <li><strong>B. スキルカードを回収する:</strong> 自分の前にあるスキルカードを手札に戻す。※[消滅] のついたカードは回収できない。</li>
-                <li><strong>C. カードを引く:</strong> 山札から1枚スキルカードを引き、手札からスキルカードを1枚捨てる。（山札が切れたら捨て札をシャッフルして新しい山札にする）</li>
-                <li><strong>D. 他プレイヤーを「攻撃」する:</strong> 他プレイヤー1人を「攻撃」し、1ダメージを与える。（体力が0のプレイヤーには「攻撃」できない）</li>
+                <li><strong>A. スキルカードを使う:</strong> 手札から1枚使い、効果を処理する。使ったカードは捨て札にする。</li>
+                <li><strong>B. 他プレイヤー1人を「攻撃」する:</strong> 対象となるプレイヤーに1ダメージを与える。体力が0のプレイヤーには「攻撃」できない。<br>
+                    <span style="color: var(--cat-attacker); font-weight: bold;">※攻撃によってダメージを受けたプレイヤーは、山札からスキルカードを1枚引いて手札に加えます。</span>
+                </li>
+                <li><strong>C. 集中する:</strong> 山札からスキルカードを2枚引き、手札に加える。その後、手札から1枚選んで捨て札にする。（山札が切れたなら、捨て札をシャッフルし、新たな山札にする）</li>
             </ul>
             <div style="margin-top: 1rem; padding: 1rem; background: rgba(196, 161, 90, 0.05); border-left: 3px solid var(--border-accent);">
                 <h4 style="color: var(--border-accent); font-family: var(--font-heading); margin-bottom: 0.5rem;">※役職カードの公開について</h4>
                 <p style="font-size: 0.9rem; line-height: 1.6;">
                     上記のアクションとは別に、効果の処理中でなければ、自分のターン中に<strong>いつでも</strong>役職カードを1枚公開することができます。<br>
                     非公開状態から公開状態になった時、【スキル】があるなら発動します。<br>
-                    また、公開している間、その役職の【固有勝利】や【永続】が有効になります（非公開状態では発動・適用されません）。
+                    また、公開している間、その役職の【勝利】や【永続】が有効になります（非公開状態では発動・適用されません）。
                 </p>
             </div>
         </div>
         <div class="ability-section">
-            <h4>4. ラウンド終了 〜 ゲーム終了</h4>
+            <h4>4. プレイヤーの脱落</h4>
             <ul class="rules-list">
-                <li>ターンが一周したら、スタートプレイヤーの左隣のプレイヤーが新しいスタートプレイヤーとなり、次ラウンドを始める。</li>
-                <li>プレイヤーが「自分だけ生き残る」または「公開されている役職の固有勝利条件を満たす」のいずれかを達成した時点でゲーム終了となる。</li>
+                <li>プレイヤーが脱落したとき、そのプレイヤーが管理するスキルカードはすべて捨て札にする。</li>
             </ul>
         </div>
-
-
-
-        <div class="priority-box">
+        <div class="ability-section">
+            <h4>5. ラウンド終了</h4>
+            <ul class="rules-list">
+                <li>ターンが一周したら、<strong style="color: var(--accent-red);">ラウンド終了後、自分の手札をすべて左隣のプレイヤーにそのまま渡します。</strong></li>
+                <li>その後、スタートプレイヤーの左隣のプレイヤーが新しいスタートプレイヤーとなり、次ラウンドを始めます。</li>
+            </ul>
+        </div>
+        
+        <div class="priority-box" style="margin-top: 2rem;">
             <h4 style="color: #fff; margin-bottom: 0.3rem; font-family: var(--font-heading);">勝利優先度について</h4>
             <p style="font-size: 0.85rem;">複数のプレイヤーが同時に勝利条件を満たした場合、以下の順で優先されます（優先度が同じ場合は全員勝利）。</p>
             <ol style="margin-left: 1.5rem; color: var(--border-accent); margin-top: 0.5rem; font-size: 0.9rem;">
-                <li>脱落した(ダメージを受けた)プレイヤー</li>
-                <li>脱落させた(ダメージを与えた)プレイヤー</li>
+                <li>脱落したプレイヤー</li>
+                <li>脱落させたプレイヤー</li>
                 <li>その他のプレイヤー</li>
             </ol>
         </div>
-    `;
-}
-
-function renderRole(container, role) {
-    const catClass = getCategoryClass(role.category);
-    container.innerHTML = `
-        <div class="detail-card role-card">
-            <div class="detail-header">
-                <div>
-                    <h1>${role.name}</h1>
-                    <span style="font-family: var(--font-heading); color: var(--text-muted); letter-spacing: 2px;">${role.enName}</span>
-                </div>
-                <div class="badges">
-                    <span class="badge ${catClass}">${role.category}</span>
-                </div>
-            </div>
-            <p style="font-style: italic; color: var(--text-muted); margin-bottom: 1.5rem;">"${role.summary}"</p>
-            
-            <div class="stat-row">
-                <div class="stat-item">
-                    <span class="stat-label">最大HP</span>
-                    <span class="stat-value" style="color: var(--accent-red);">${role.hp}</span>
-                </div>
-            </div>
-
-            <div class="ability-section victory-section">
-                <h4>固有勝利条件</h4>
-                <p>${autoLink(role.victory)}</p>
-            </div>
-
-            ${role.skill ? `
-            <div class="ability-section">
-                <h4>スキル</h4>
-                <p>${autoLink(role.skill)}</p>
-            </div>` : ''}
-
-            ${role.passive ? `
-            <div class="ability-section">
-                <h4>永続効果</h4>
-                <p>${autoLink(role.passive)}</p>
-            </div>` : ''}
-
-            <div class="supplementary-sections" style="margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
-                ${role.overview ? `
-                <div class="tactics-section" style="margin-top: 0; padding-top: 0; border-top: none; margin-bottom: 2rem;">
-                    <h4>役職概要・特殊裁定</h4>
-                    ${autoLink(role.overview)}
-                </div>` : ''}
-
-                <div class="tactics-section" style="margin-top: 0; padding-top: 0; border-top: none;">
-                    <h4>立ち回り</h4>
-                    ${autoLink(role.tactics)}
-                </div>
-            </div>
-        </div>
-    `;
-}
-
-function renderSkill(container, skill) {
-    const catClass = getCategoryClass(skill.category);
-    container.innerHTML = `
-        <div class="detail-card skill-card">
-            <div class="detail-header">
-                <div>
-                    <h1>${skill.name}</h1>
-                    <span style="font-family: var(--font-heading); color: var(--text-muted); letter-spacing: 2px;">${skill.enName}</span>
-                </div>
-                <div class="badges">
-                    <span class="badge ${catClass}">${skill.category}</span>
-                    ${skill.ephemeral ? `<span class="badge ephemeral" title="このスキルカードは回収できない">消滅</span>` : ''}
-                    ${skill.fast ? `<span class="badge fast" title="このスキルカードの使用後追加でアクションを行う">迅速</span>` : ''}
-                </div>
-            </div>
-            
-            <div class="ability-section">
-                <h4>効果</h4>
-                <p style="font-size: 1.1rem; font-weight: bold; color: #fff;">${autoLink(skill.effect)}</p>
-            </div>
-
-            <div class="supplementary-sections" style="margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
-                <div class="tactics-section" style="margin-top: 0; padding-top: 0; border-top: none;">
-                    <h4>使い方・ポイント</h4>
-                    ${autoLink(skill.usage)}
-                </div>
-            </div>
-        </div>
-    `;
-}
-
-function renderNotFound(container) {
-    container.innerHTML = `
-        <h1 class="page-title">404 Not Found</h1>
-        <p>指定されたページが見つかりません。</p>
     `;
 }
 
@@ -415,30 +318,126 @@ function renderAdvancedRules(container) {
 
         <h2>ステータスに関する裁定</h2>
         <ul class="rules-list">
-            <li><strong>最大体力:</strong> ゲーム開始時に配られた2枚の役職（公開用・非公開用）の「最大HP」を合計した数値が、そのプレイヤーの初期の最大体力となります（おおよそ8〜10になります）。</li>
-            <li>役職をまったく公開していないプレイヤーの最大体力は、暫定的に「5」として扱います。</li>
-            <li><strong>体力の入れ替え:</strong> 体力が入れ替わったとき、最大体力を体力が上回った場合のみ、最大体力へ切り捨てます。</li>
+            <li><strong>最大体力:</strong> 各プレイヤーの最大体力は、所持する役職カード2枚の最大体力の合計です。</li>
+            <li>非公開の役職の最大体力は常に「5」として扱うため、<strong>役職をまったく公開していないプレイヤーの最大体力は「10（5+5）」として扱います。</strong></li>
+            <li><strong>体力の処理:</strong> 現在の体力が最大体力を上回った場合、最大体力へ切り捨てます。それ以外の場合、現在の体力を受け継ぎます。</li>
         </ul>
 
         <h2>テキストの対象指定・定義に関する裁定</h2>
         <ul class="rules-list">
-            <li><strong>全員:</strong> 人数が明記されていない限り、盤面にいるすべてのプレイヤーを指します。</li>
-            <li><strong>自分を含むか:</strong> 「他」と書いていなければ、条件を満たしている限り自分自身も対象に含みます。</li>
+            <li><strong>自分を含むか:</strong> 「他」と書いていなければ、条件を満たしている限り自分自身も対象に含みます（自分も選ぶことができます）。</li>
             <li><strong>自分:</strong> 特に明記されていない限り、「自分」とはそのカードを所持・使用しているプレイヤー自身を指します。</li>
-            <li><strong>受けているダメージ:</strong> 「最大体力」から「現在の体力」を引いた値を指します。</li>
+            <li><strong>受けているダメージ:</strong> 「最大体力(合計)」から「現在の体力(合計)」を引いた値を指します。</li>
+            <li><strong>「効果」の定義:</strong> スキルカードの効果、および役職の【スキル】【永続】を指します。「攻撃」アクションや、【固有勝利】は含まれません。</li>
         </ul>
 
         <h2>その他の特殊裁定</h2>
         <ul class="rules-list">
-            <li><strong>役職の有効条件:</strong> 役職の【固有勝利】【スキル】【永続】は、そのカードが公開されている場合のみ有効となります。（非公開状態では発動しません）</li>
-            <li><strong>全体攻撃:</strong> 全体攻撃は「全員」を対象とするため、自分自身もダメージを受けます（「他のすべての」と記載されている場合は例外です）。</li>
-            <li><strong>スキル16:</strong> 対象を指定できる効果などは、2回分の処理ごとにその都度指定し直すことができます。</li>
+            <li><strong>役職の有効条件:</strong> 役職の【勝利】【スキル】【永続】は、そのカードが公開されている場合のみ有効となります。（非公開状態では発動しません）</li>
+            <li><strong>スキル16:</strong> 対象を指定できる効果などは、その都度指定し直すことができます。</li>
+            <li><strong>クロノス:</strong> ラウンド終了前に回復した場合、ゲームは続行します。</li>
         </ul>
 
         <h2>カード効果のキーワード</h2>
         <ul class="rules-list">
-            <li><strong>[消滅]:</strong> 一度使用すると自分の前に置かれ、「手札への回収」ができなくなります。捨て札にはならず場に残るため、「他プレイヤーの前にあるカードを選ぶ」効果（例：スキル20など）の対象にすることは可能です。</li>
-            <li><strong>[迅速]:</strong> この属性を持つスキルカードを使用した直後、自身はターンを終了せず「追加で1つアクション」を行うことができます。（連続行動が可能になります）</li>
+            <li><strong>[ダメージ]X:</strong> 「Xの分だけダメージを受ける」ことを意味します。</li>
+            <li><strong>[回復]X:</strong> 「Xの分だけ回復する」ことを意味します。</li>
         </ul>
+    `;
+}
+
+function renderRole(container, role) {
+    const catClass = getCategoryClass(role.category);
+    
+    let html = `
+        <div style="margin-bottom: 2rem;">
+            <div style="display: flex; align-items: baseline; gap: 1rem; margin-bottom: 0.5rem;">
+                <h1 class="page-title" style="margin-bottom: 0; border: none; padding: 0;">${role.name}</h1>
+                <span style="font-family: var(--font-heading); color: var(--text-muted); font-size: 1.2rem;">${role.enName}</span>
+            </div>
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                <span class="badge ${catClass}">${role.category}</span>
+            </div>
+        </div>
+
+        <div class="stat-row">
+            <div class="stat-item">
+                <span class="stat-label">最大体力 (HP)</span>
+                <span class="stat-value">${role.hp}</span>
+            </div>
+        </div>
+
+        <div class="detail-card">
+            <div class="victory-section ability-section">
+                <h4>固有勝利条件</h4>
+                <p>${autoLink(role.victory)}</p>
+            </div>
+    `;
+
+    if (role.skill) {
+        html += `
+            <div class="ability-section">
+                <h4>【スキル】</h4>
+                <p>${autoLink(role.skill)}</p>
+            </div>
+        `;
+    }
+
+    if (role.passive) {
+        html += `
+            <div class="ability-section">
+                <h4>【永続】</h4>
+                <p>${autoLink(role.passive)}</p>
+            </div>
+        `;
+    }
+
+    html += `
+            <div class="tactics-section">
+                <h4>概要・特殊裁定</h4>
+                ${autoLink(role.overview)}
+            </div>
+            <div class="tactics-section">
+                <h4>立ち回り (戦術)</h4>
+                ${autoLink(role.tactics)}
+            </div>
+        </div>
+    `;
+
+    container.innerHTML = html;
+}
+
+function renderSkill(container, skill) {
+    const catClass = getCategoryClass(skill.category);
+    
+    container.innerHTML = `
+        <div style="margin-bottom: 2rem;">
+            <div style="display: flex; align-items: baseline; gap: 1rem; margin-bottom: 0.5rem;">
+                <h1 class="page-title" style="margin-bottom: 0; border: none; padding: 0;">${skill.name}</h1>
+                <span style="font-family: var(--font-heading); color: var(--text-muted); font-size: 1.2rem;">${skill.enName}</span>
+            </div>
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                <span class="badge ${catClass}">${skill.category}</span>
+            </div>
+        </div>
+
+        <div class="detail-card">
+            <div class="ability-section" style="border-left: 3px solid var(--border-accent);">
+                <h4>効果</h4>
+                <p style="font-size: 1.1rem; color: #fff;">${autoLink(skill.effect)}</p>
+            </div>
+            
+            <div class="tactics-section">
+                <h4>使い方・ポイント</h4>
+                ${autoLink(skill.usage)}
+            </div>
+        </div>
+    `;
+}
+
+function renderNotFound(container) {
+    container.innerHTML = `
+        <h1 class="page-title">404 Not Found</h1>
+        <p>指定されたページが見つかりません。</p>
     `;
 }
