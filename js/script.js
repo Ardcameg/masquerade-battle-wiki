@@ -281,16 +281,15 @@ function renderRules(container) {
             <ul class="rules-list">
                 <li>プレイヤーが勝利条件のいずれかを満たしたなら、ゲームを終了します。</li>
             </ul>
-        </div>
-        
-        <div class="priority-box" style="margin-top: 2rem;">
-            <h4 style="color: #fff; margin-bottom: 0.3rem; font-family: var(--font-heading);">勝利優先度について</h4>
-            <p style="font-size: 0.85rem;">複数のプレイヤーが同時に勝利条件を満たした場合、以下の順で優先されます。優先度が同じ場合は全員勝利。</p>
-            <ol style="margin-left: 1.5rem; color: var(--border-accent); margin-top: 0.5rem; font-size: 0.9rem;">
-                <li>脱落したプレイヤー</li>
-                <li>脱落させたプレイヤー</li>
-                <li>その他のプレイヤー</li>
-            </ol>
+            <div class="priority-box" style="margin-top: 2rem;">
+                <h4 style="color: #fff; margin-bottom: 0.3rem; font-family: var(--font-heading);">勝利優先度について</h4>
+                <p style="font-size: 0.85rem;">複数のプレイヤーが同時に勝利条件を満たした場合、以下の順で優先されます。優先度が同じ場合は全員勝利。</p>
+                <ol style="margin-left: 1.5rem; color: var(--border-accent); margin-top: 0.5rem; font-size: 0.9rem;">
+                    <li>脱落したプレイヤー</li>
+                    <li>脱落させたプレイヤー</li>
+                    <li>その他のプレイヤー</li>
+                </ol>
+            </div>
         </div>
     `;
 }
