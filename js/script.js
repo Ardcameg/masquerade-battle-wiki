@@ -310,7 +310,6 @@ function renderAdvancedRules(container) {
         <h2>その他の特殊裁定</h2>
         <ul class="rules-list">
             <li><strong>役職の有効条件:</strong> 役職の【勝利】【スキル】【永続】は、そのカードが公開されている場合のみ有効となります。非公開状態では発動しません。</li>
-            <li><strong>スキル16:</strong> 対象を指定できる効果などは、その都度指定し直すことができます。</li>
         </ul>
 
         <h2>カード効果のキーワード</h2>
