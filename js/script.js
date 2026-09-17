@@ -289,7 +289,8 @@ function renderRules(container) {
 function renderAdvancedRules(container) {
     container.innerHTML = `
         <h1 class="page-title">詳細なゲーム仕様・裁定</h1>
-        <p>ここでは、より複雑な処理や、ゲーム内の用語の厳密な定義について解説します。</p>
+        <p>ここでは、より複雑な処理や、ゲーム内の用語の厳密な定義について解説します。<br>
+        大して読む必要はないです</p>
 
         <h2>ステータスに関する裁定</h2>
         <ul class="rules-list">
