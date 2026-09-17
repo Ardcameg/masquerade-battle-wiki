@@ -66,7 +66,7 @@ const gameData = {
             category: "アタッカー",
             hp: 5,
             summary: "回復を捨てて圧倒的火力を押し付ける役職",
-            victory: "なし",
+            victory: null,
             skill: "体力をすべて回復する。",
             passive: "与えるすべてのダメージが+2、受けるすべてダメージが+1",
             overview: `
