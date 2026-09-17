@@ -18,7 +18,7 @@
     --cat-special: #c4a15a;
 
     --font-heading: 'Cinzel', "Kaisei Opti", serif;
-    --font-body: "Kaisei Opti", sans-serif;
+    --font-body: 'Noto Sans JP', sans-serif;
 }
 
 * {
