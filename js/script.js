@@ -383,7 +383,7 @@ function renderRole(container, role) {
                 ${autoLink(role.overview, role.id)}
             </div>
             <div class="tactics-section">
-                <h4>立ち回り</h4>
+                <h4>立ち回り・ポイント</h4>
                 ${autoLink(role.tactics, role.id)}
             </div>
         </div>
