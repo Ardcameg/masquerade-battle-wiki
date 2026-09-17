@@ -553,17 +553,6 @@ p {
     padding-left: 0.5rem;
 }
 
-.tactic-title {
-    display: inline-block;
-    color: var(--border-accent);
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-    font-size: 1rem;
-    border-bottom: 1px solid rgba(196, 161, 90, 0.4);
-    padding-bottom: 4px;
-    letter-spacing: 1px;
-}
-
 .tactic-desc {
     margin-left: 1.2rem;
     color: var(--text-muted);
