@@ -20,7 +20,6 @@ const gameData = {
             `,
             tactics: `
                 <div class="tactic-block">
-                    <div class="tactic-title">立ち回りとポイント</div>
                     <div class="tactic-desc">
                         <ul class="wiki-list">
                             <li>公開されている役職を手掛かりに候補を絞り、確信が持てるターンに宣言します。</li>
