@@ -49,7 +49,6 @@ const gameData = {
             `,
             tactics: `
                 <div class="tactic-block">
-                    <div class="tactic-title">立ち回りとポイント</div>
                     <div class="tactic-desc">
                         <ul class="wiki-list">
                             <li>公開後にスキルで、最大値の5回復できるよう、受けたダメージを見て公開のタイミングを決めます。</li>
@@ -78,7 +77,6 @@ const gameData = {
             `,
             tactics: `
                 <div class="tactic-block">
-                    <div class="tactic-title">立ち回りとポイント</div>
                     <div class="tactic-desc">
                         <ul class="wiki-list">
                             <li>公開時の全回復で攻撃を継続し、スキル11スキル14や通常攻撃を+2して一気に脱落を狙います。</li>
@@ -108,7 +106,6 @@ const gameData = {
             `,
             tactics: `
                 <div class="tactic-block">
-                    <div class="tactic-title">立ち回りとポイント</div>
                     <div class="tactic-desc">
                         <ul class="wiki-list">
                             <li>ダメージを伴わないスキルを連発して盾を張る動きが有効です。</li>
@@ -137,7 +134,6 @@ const gameData = {
             `,
             tactics: `
                 <div class="tactic-block">
-                    <div class="tactic-title">立ち回りとポイント</div>
                     <div class="tactic-desc">
                         <ul class="wiki-list">
                             <li>HPを低く保ちつつ、集中やスキル18で手札を増やし、ターン終了時の差を2枚以上にします。</li>
@@ -166,7 +162,6 @@ const gameData = {
             `,
             tactics: `
                 <div class="tactic-block">
-                    <div class="tactic-title">立ち回りとポイント</div>
                     <div class="tactic-desc">
                         <ul class="wiki-list">
                             <li>序盤に非公開役職を1つ確認し、その情報を使って公開させる相手を選びます。</li>
@@ -194,7 +189,6 @@ const gameData = {
             `,
             tactics: `
                 <div class="tactic-block">
-                    <div class="tactic-title">立ち回りとポイント</div>
                     <div class="tactic-desc">
                         <ul class="wiki-list">
                             <li>公開時に山札から3枚引いて体力を2にし、脱落後の追加ターンに備えて手札を確保します。</li>
@@ -223,7 +217,6 @@ const gameData = {
             `,
             tactics: `
                 <div class="tactic-block">
-                    <div class="tactic-title">立ち回りとポイント</div>
                     <div class="tactic-desc">
                         <ul class="wiki-list">
                             <li>序盤から手札を温存し、公開時は捨て札の内容を見て不足している役割のカードを回収します。</li>
@@ -252,7 +245,6 @@ const gameData = {
             `,
             tactics: `
                 <div class="tactic-block">
-                    <div class="tactic-title">立ち回りとポイント</div>
                     <div class="tactic-desc">
                         <ul class="wiki-list">
                             <li>スキル11やスキル14で2以上のダメージを与え、相手の手札を削りながら勝利条件を進めます。</li>
@@ -281,7 +273,6 @@ const gameData = {
             `,
             tactics: `
                 <div class="tactic-block">
-                    <div class="tactic-title">立ち回りとポイント</div>
                     <div class="tactic-desc">
                         <ul class="wiki-list">
                             <li>自分が脱落しても2人以上の脱落者がいれば勝利できるため、終盤の乱戦で勝利条件を満たしやすい役職です。</li>
