@@ -7,6 +7,7 @@
     
     --text-main: #eaddc5;
     --text-muted: #888;
+    --accent-red: #ff0000;
     
     /* Category Colors (Solid) */
     --cat-attacker: #d32f2f;
@@ -174,7 +175,7 @@ body {
 
 /* Sidebar Navigation - Solid & Flat */
 .sidebar {
-    width: 250px;
+    width: 260px;
     background: var(--sidebar-bg);
     border-right: 1px solid var(--border-color);
     padding: 2rem 0;
@@ -238,6 +239,33 @@ body {
     border-left: 3px solid transparent;
     transition: color 0.2s;
     position: relative;
+    gap: 0.5rem;
+}
+
+.nav-link-text {
+    display: flex;
+    align-items: baseline;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.nav-link-name {
+    flex-shrink: 0;
+}
+
+.nav-link-en {
+    font-size: 0.65rem;
+    opacity: 0.5;
+    margin-left: 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.nav-link .badge {
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .nav-link:hover, .nav-link.active {
@@ -337,6 +365,62 @@ p {
 .badges {
     display: flex;
     gap: 0.5rem;
+}
+
+.role-flavor {
+    color: var(--border-accent);
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    letter-spacing: 2px;
+    font-style: italic;
+    margin-top: 0.5rem;
+    display: inline-block;
+    position: relative;
+    min-height: 1.6rem;
+}
+
+.role-flavor.glitching {
+    animation: glitchAnim 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+    text-shadow: 2px 0 #ff0055, -2px 0 #00ffff;
+}
+
+@keyframes glitchAnim {
+    0% {
+        opacity: 0;
+        transform: translate(-3px, 1px) skewX(6deg);
+        clip-path: inset(30% 0 30% 0);
+        text-shadow: -3px 0 #ff0055, 3px 0 #00ffff;
+    }
+    20% {
+        opacity: 0.9;
+        transform: translate(3px, -2px) skewX(-6deg);
+        clip-path: inset(10% 0 50% 0);
+        text-shadow: 3px 0 #ff0055, -3px 0 #00ffff;
+    }
+    40% {
+        opacity: 0.6;
+        transform: translate(-2px, 2px) skewX(3deg);
+        clip-path: inset(60% 0 10% 0);
+        text-shadow: -2px 0 #ff0055, 2px 0 #00ffff;
+    }
+    60% {
+        opacity: 1;
+        transform: translate(2px, -1px) skewX(-2deg);
+        clip-path: inset(15% 0 35% 0);
+        text-shadow: 2px 0 #ff0055, -2px 0 #00ffff;
+    }
+    80% {
+        opacity: 0.9;
+        transform: translate(-1px, 0) skewX(1deg);
+        clip-path: inset(0 0 0 0);
+        text-shadow: -1px 0 #ff0055, 1px 0 #00ffff;
+    }
+    100% {
+        opacity: 1;
+        transform: translate(0, 0) skewX(0);
+        clip-path: inset(0 0 0 0);
+        text-shadow: none;
+    }
 }
 
 .badge {
