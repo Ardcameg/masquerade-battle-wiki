@@ -79,57 +79,48 @@ function initNavigation() {
     const rolesNav = document.getElementById('nav-roles');
     const skillsNav = document.getElementById('nav-skills');
 
-    const rolesByCategory = {};
-    gameData.roles.forEach(role => {
-        if (role.hidden) return;
-        if (!rolesByCategory[role.category]) rolesByCategory[role.category] = [];
-        rolesByCategory[role.category].push(role);
-    });
+    const sortedRoles = [...gameData.roles]
+        .filter(role => !role.hidden)
+        .sort((a, b) => (a.no || 0) - (b.no || 0));
 
-    for (const [category, roles] of Object.entries(rolesByCategory)) {
-        const catClass = getCategoryClass(category);
-        const catColor = categoryColorMap[catClass] || "var(--border-accent)";
-        
-        const catLi = document.createElement('li');
-        catLi.className = 'nav-category';
-        catLi.style.color = catColor;
-        catLi.textContent = category;
-        rolesNav.appendChild(catLi);
-
-        roles.forEach(role => {
-            const li = document.createElement('li');
-            li.innerHTML = `<a href="#role/${role.id}" class="nav-link" data-id="role/${role.id}" data-color="${catColor}" title="${role.summary}">
-                ${role.name} <span style="font-size: 0.65rem; opacity: 0.5; margin-left: 5px;">${role.enName}</span>
-            </a>`;
-            rolesNav.appendChild(li);
-        });
-    }
-
-    const skillsByCategory = {};
-    gameData.skills.forEach(skill => {
-        if (skill.hidden) return;
-        if (!skillsByCategory[skill.category]) skillsByCategory[skill.category] = [];
-        skillsByCategory[skill.category].push(skill);
-    });
-
-    for (const [category, skills] of Object.entries(skillsByCategory)) {
-        const catClass = getCategoryClass(category);
+    sortedRoles.forEach(role => {
+        const catClass = getCategoryClass(role.category);
         const catColor = categoryColorMap[catClass] || "var(--border-accent)";
 
-        const catLi = document.createElement('li');
-        catLi.className = 'nav-category';
-        catLi.style.color = catColor;
-        catLi.textContent = category;
-        skillsNav.appendChild(catLi);
+        const li = document.createElement('li');
+        li.innerHTML = `<a href="#role/${role.id}" class="nav-link" data-id="role/${role.id}" data-color="${catColor}">
+            <span class="nav-link-text">
+                ${role.no ? `<span class="nav-link-name" style="font-size: 0.75rem; opacity: 0.5; margin-right: 6px;">${String(role.no).padStart(2, '0')}</span>` : ''}
+                <span class="nav-link-name">${role.name}</span>
+                <span class="nav-link-en">${role.enName}</span>
+            </span>
+            <span class="badge ${catClass}" style="font-size: 0.6rem; padding: 1px 6px; border-radius: 2px;">${role.category}</span>
+        </a>`;
+        rolesNav.appendChild(li);
+    });
 
-        skills.forEach(skill => {
-            const li = document.createElement('li');
-            li.innerHTML = `<a href="#skill/${skill.id}" class="nav-link" data-id="skill/${skill.id}" data-color="${catColor}" title="${skill.effect}">
-                ${skill.name} <span style="font-size: 0.65rem; opacity: 0.5; margin-left: 5px;">${skill.enName}</span>
-            </a>`;
-            skillsNav.appendChild(li);
+    const sortedSkills = [...gameData.skills]
+        .filter(skill => !skill.hidden)
+        .sort((a, b) => {
+            const numA = parseInt(a.id.replace(/\D/g, ''), 10);
+            const numB = parseInt(b.id.replace(/\D/g, ''), 10);
+            return numA - numB;
         });
-    }
+
+    sortedSkills.forEach(skill => {
+        const catClass = getCategoryClass(skill.category);
+        const catColor = categoryColorMap[catClass] || "var(--border-accent)";
+
+        const li = document.createElement('li');
+        li.innerHTML = `<a href="#skill/${skill.id}" class="nav-link" data-id="skill/${skill.id}" data-color="${catColor}">
+            <span class="nav-link-text">
+                <span class="nav-link-name">${skill.name}</span>
+                <span class="nav-link-en">${skill.enName}</span>
+            </span>
+            <span class="badge ${catClass}" style="font-size: 0.6rem; padding: 1px 6px; border-radius: 2px;">${skill.category}</span>
+        </a>`;
+        skillsNav.appendChild(li);
+    });
 
     document.querySelectorAll('.nav-link').forEach(link => {
         link.addEventListener('mouseenter', function() {
@@ -217,10 +208,11 @@ function handleRoute() {
 function renderRules(container) {
     container.innerHTML = `
         <h1 class="page-title">Rules & Mechanics</h1>      
+
         <h2>ゲームの目的 / 勝利条件</h2>
         <p>以下のどちらかを満たせば勝利となりゲームが終了します。</p>
         <ul class="rules-list">
-            <li>すべての他プレイヤーの体力を0にする。自分だけ生き残る。</li>
+            <li>すべての他プレイヤーの体力を0にする（自分だけ生き残る）。</li>
             <li>公開されている自身の役職の「固有勝利条件」を満たす。</li>
         </ul>
 
@@ -228,66 +220,76 @@ function renderRules(container) {
         <div class="ability-section">
             <h4>1. ゲーム開始処理</h4>
             <ul class="rules-list">
-                <li>役職カードをシャッフルして、1人2枚ずつ分け、自分の前に置く。</li>
-                <li>スキルカードをシャッフルし、1人2枚ずつ手札として分ける。余りは中央に置き、山札とする。</li>
+                <li>役職カードをシャッフルして、1人2枚ずつ配り、自分の前に非公開で置く。</li>
+                <li>スキルカードをシャッフルし、<strong>1人3枚ずつ</strong>手札として配る。余ったものは中央に置き、山札とする。</li>
                 <li>サマリーカードを各プレイヤーに配る。</li>
-                <li>プレイヤーは、役職カードのうち、1枚を選んで公開する。<br>
-                    
+                <li>スタートプレイヤーを決定する。</li>
+            </ul>
+        </div>
+        <div class="ability-section">
+            <h4>2. 最初のラウンド</h4>
+            <ul class="rules-list">
+                <li>スタートプレイヤーから時計回りに順に手番を行います。</li>
+                <li>各プレイヤーは、所持する役職カードのうち、<strong>1枚を選んで公開</strong>します。<br>
+                    <span style="font-size: 0.9em; color: var(--text-muted);">
+                    ※このラウンドでは通常のアクション（スキル使用・攻撃・集中）は行いません。<br>
+                    ※役職が公開された時、その役職の【スキル】があれば即座に発動します。また、【永続】【勝利】が有効になります。<br>
+                    ※各プレイヤーの最大体力は、所持する役職カード2枚の最大体力の合計です（非公開の役職の最大体力は常に「5」として扱う）。現在の体力もこの最大体力と同じ値から開始します。<br>
+                    ※全員が1枚ずつ公開したら最初のラウンドは終了です（手札の受け渡しは行いません）。
+                    </span>
                 </li>
             </ul>
         </div>
         <div class="ability-section">
-            <h4>2. ゲーム開始</h4>
-            <ul class="rules-list">
-                <li>スタートプレイヤーを決める。</li>
-            </ul>
-        </div>
-        <div class="ability-section">
-            <h4>3. 最初のラウンド</h4>
-            <ul class="rules-list">
-                <li>最初のラウンドでは、スタートプレイヤーから時計回りに、非公開の役職のうち1枚を公開することのみができます。</li>
-                <li>このとき、【スキル】があれば発動し、【勝利】【永続】も公開したその時点から有効になります。</li>
-                    <span style="font-size: 0.9em; color: var(--text-muted);">
-                    ※各プレイヤーの最大体力は、所持する役職カード2枚の最大体力の合計です。<br>
-                    ※非公開の役職の最大体力は常に「5」として扱います。
-                    </span>
-            </ul>
-        </div>
-        <div class="ability-section">
-            <h4>4. ラウンド開始 〜 プレイヤーターン</h4>
-            <p>ラウンドを開始し、スタートプレイヤーのターンとなります。自分のターンでは、以下のアクションから <strong>1つ</strong> を選んで行います。行ったなら、ターンを終了し、次のプレイヤーのターンになります。</p>
+            <h4>3. それ以降のラウンド（通常ラウンド）</h4>
+            <p>スタートプレイヤーから時計回りに順にプレイヤーターンを行います。プレイヤーのターンでは、以下のアクションから1つを選んで行います。行ったなら、ターンを終了し、次のプレイヤーのターンになります。</p>
             <ol class="rules-list" type="A">
-                <li><strong>スキルカードを使う:</strong> 手札から1枚使い、効果を処理する。使ったカードは捨て札にする。</li>
-                <li><strong>他プレイヤー1人を「攻撃」する:</strong> 対象となるプレイヤーに2ダメージを与える</li>
-                <li><strong>集中する:</strong> 山札からスキルカードを2枚引き、手札に加える。その後、手札から1枚選んで捨て札にする。山札が切れたなら、捨て札をシャッフルし、新たな山札にする。</li>
-                <li><strong>役職を公開する:</strong> 非公開状態から公開状態になった時、【スキル】を発動する。公開している間、その役職の【勝利】【永続】が有効になる。</li>
+                <li><strong>スキルカードを使う</strong>
+                    <p>手札から1枚使い、効果を処理する。使ったカードは捨て札にする。</p>
+                </li>
+                <li><strong>攻撃</strong><br>
+                    <p>他プレイヤー1人に2ダメージを与える。<br>
+                    <span style="color: var(--text-muted); margin-top: 0.5rem; display: inline-block;">※体力が0のプレイヤーに攻撃することはできない</span></p>
+                </li>
+                <li><strong>集中</strong>
+                    <p>
+                        山札からスキルカードを2枚引き、手札に加える。その後、手札から1枚選んで捨て札にする。<br>
+                        山札が切れたなら、捨て札をシャッフルし、新たな山札にする。
+                    </p>
+                </li>
+                <li><strong>役職を公開</strong>
+                    <p>
+                        自分の残りの非公開役職カードを公開する。<br>
+                        非公開状態から公開状態になった時、【スキル】があれば発動する。<br>
+                        公開している間だけ、その役職の【勝利】【永続】が有効になる。
+                    </p>
+                </li>
             </ol>
+            <p style="font-size: 0.9em; color: var(--text-muted); margin-top: 0.5rem;">
+                ※プレイヤーのターンで、何の行動もできない場合、「パス」となります。そうでない場合、必ず行動を行います。<br>
+                ※プレイヤーが脱落したとき、そのプレイヤーが管理するスキルカードはすべて捨て札にします。
+            </p>
         </div>
         <div class="ability-section">
-            <h4>5. プレイヤーの脱落</h4>
+            <h4>4. ラウンド終了</h4>
             <ul class="rules-list">
-                <li>プレイヤーが脱落したとき、そのプレイヤーが管理するスキルカードはすべて捨て札にする。</li>
+                <li>全員のターンが一巡したら、ラウンド終了となります。</li>
+                <li><strong style="color: var(--accent-red);">ラウンド終了後、自分の手札から1枚選び、それ以外をすべて左隣のプレイヤーにそのまま渡します。</strong></li>
+                <li>その後、スタートプレイヤーの左隣のプレイヤーが新たなスタートプレイヤーとなり、次のラウンドを開始します。</li>
             </ul>
         </div>
         <div class="ability-section">
-            <h4>6. ラウンド終了</h4>
-            <ul class="rules-list">
-                <li>ターンが一周したら、<strong style="color: var(--accent-red);">ラウンド終了後、自分の手札をすべて左隣のプレイヤーにそのまま渡します。</strong></li>
-                <li>その後、スタートプレイヤーの左隣のプレイヤーが新しいスタートプレイヤーとなり、次ラウンドを始めます。</li>
-            </ul>
-        </div>
-        <div class="ability-section">
-            <h4>7. ゲーム終了</h4>
+            <h4>5. ゲーム終了</h4>
             <ul class="rules-list">
                 <li>プレイヤーが勝利条件のいずれかを満たしたなら、ゲームを終了します。</li>
             </ul>
             <div class="priority-box" style="margin-top: 2rem;">
                 <h4 style="color: #fff; margin-bottom: 0.3rem; font-family: var(--font-heading);">勝利優先度について</h4>
-                <p style="font-size: 0.85rem;">複数のプレイヤーが同時に勝利条件を満たした場合、以下の順で優先されます。優先度が同じ場合は全員勝利。</p>
+                <p style="font-size: 0.85rem;">複数のプレイヤーが同時に勝利条件を満たした場合、上から順に勝利が優先されます。勝利優先度が同じプレイヤーが同時に複数勝利条件を満たした場合、全員勝利となります。</p>
                 <ol style="margin-left: 1.5rem; color: var(--border-accent); margin-top: 0.5rem; font-size: 0.9rem;">
-                    <li>脱落したプレイヤー</li>
-                    <li>脱落させたプレイヤー</li>
-                    <li>その他のプレイヤー</li>
+                    <li><strong>脱落したプレイヤー</strong></li>
+                    <li><strong>脱落させたプレイヤー</strong></li>
+                    <li><strong>その他のプレイヤー</strong></li>
                 </ol>
             </div>
         </div>
@@ -326,6 +328,49 @@ function renderAdvancedRules(container) {
     `;
 }
 
+let glitchTimer = null;
+let glitchTimeout = null;
+
+function triggerGlitchText(element, targetText) {
+    if (!element || !targetText) return;
+
+    if (glitchTimer) clearInterval(glitchTimer);
+    if (glitchTimeout) clearTimeout(glitchTimeout);
+
+    element.textContent = '';
+    element.classList.remove('glitching');
+
+    const glitchChars = '!<>-_\\/[]{}—=+*^?#ｱｲｳｴｵｶｷｸｹｺ0123456789';
+    const totalFrames = 16;
+    const intervalMs = 28;
+
+    glitchTimeout = setTimeout(() => {
+        element.classList.add('glitching');
+        let frame = 0;
+
+        glitchTimer = setInterval(() => {
+            frame++;
+            const progress = frame / totalFrames;
+            const resolvedLength = Math.floor(progress * targetText.length);
+
+            let output = targetText.slice(0, resolvedLength);
+            for (let i = resolvedLength; i < targetText.length; i++) {
+                output += glitchChars[Math.floor(Math.random() * glitchChars.length)];
+            }
+            element.textContent = output;
+
+            if (frame >= totalFrames) {
+                clearInterval(glitchTimer);
+                glitchTimer = null;
+                element.textContent = targetText;
+                setTimeout(() => {
+                    element.classList.remove('glitching');
+                }, 100);
+            }
+        }, intervalMs);
+    }, 220);
+}
+
 function renderRole(container, role) {
     const catClass = getCategoryClass(role.category);
     
@@ -335,9 +380,10 @@ function renderRole(container, role) {
                 <h1 class="page-title" style="margin-bottom: 0; border: none; padding: 0;">${role.name}</h1>
                 <span style="font-family: var(--font-heading); color: var(--text-muted); font-size: 1.2rem;">${role.enName}</span>
             </div>
-            <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+            <div style="display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.8rem;">
                 <span class="badge ${catClass}">${role.category}</span>
             </div>
+            ${role.summary ? `<div class="role-flavor" id="role-flavor"></div>` : ''}
         </div>
 
         <div class="stat-row">
@@ -390,6 +436,13 @@ function renderRole(container, role) {
     `;
 
     container.innerHTML = html;
+
+    if (role.summary) {
+        const flavorEl = document.getElementById('role-flavor');
+        if (flavorEl) {
+            triggerGlitchText(flavorEl, role.summary);
+        }
+    }
 }
 
 function renderSkill(container, skill) {
