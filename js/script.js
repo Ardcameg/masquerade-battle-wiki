@@ -57,16 +57,21 @@ function autoLink(text, currentId = null) {
     // Process Roles
     gameData.roles.forEach(r => {
         if (r.id === currentId) return;
-        const regex = new RegExp(`「?${r.name}」?`, 'g');
-        result = result.replace(regex, `<a href="#role/${r.id}" class="inline-link">「${r.name}」</a>`);
+        const regex = new RegExp(`[「《]?${r.name}[」》]?`, 'g');
+        result = result.replace(regex, `<a href="#role/${r.id}" class="inline-link">《${r.name}》</a>`);
     });
     
     // Process Skills
     gameData.skills.forEach(s => {
         if (s.id === currentId) return;
         const sNum = parseInt(s.id.replace('s', ''), 10);
-        const regex = new RegExp(`「?スキル\\s*(0?${sNum})(?!\\d)」?`, 'g');
-        result = result.replace(regex, `<a href="#skill/${s.id}" class="inline-link">「スキル${sNum}」</a>`);
+        const sNoStr = String(sNum).padStart(2, '0');
+        const regex = new RegExp(`[「《]?スキル\\s*(0?${sNum})(?!\\d)[」》]?`, 'g');
+        result = result.replace(regex, `<a href="#skill/${s.id}" class="inline-link">《${sNoStr}. ${s.name}》</a>`);
+        if (s.name && s.name !== "欠番") {
+            const regexName = new RegExp(`[「《]${s.name}[」》]`, 'g');
+            result = result.replace(regexName, `<a href="#skill/${s.id}" class="inline-link">《${sNoStr}. ${s.name}》</a>`);
+        }
     });
     
     result = result.replace(/\\[ダメージ\\](\\d+|手札の枚数)/g, '<span class="keyword-damage" title="[ダメージ]X: Xの分だけダメージを受ける">[ダメージ]$1</span>');
@@ -110,10 +115,12 @@ function initNavigation() {
     sortedSkills.forEach(skill => {
         const catClass = getCategoryClass(skill.category);
         const catColor = categoryColorMap[catClass] || "var(--border-accent)";
+        const skillNo = skill.no ? String(skill.no).padStart(2, '0') : skill.id.replace(/\D/g, '');
 
         const li = document.createElement('li');
         li.innerHTML = `<a href="#skill/${skill.id}" class="nav-link" data-id="skill/${skill.id}" data-color="${catColor}">
             <span class="nav-link-text">
+                <span class="nav-link-name" style="font-size: 0.75rem; opacity: 0.5; margin-right: 6px;">${skillNo}</span>
                 <span class="nav-link-name">${skill.name}</span>
                 <span class="nav-link-en">${skill.enName}</span>
             </span>
@@ -318,6 +325,7 @@ function renderAdvancedRules(container) {
         <h2>その他の特殊裁定</h2>
         <ul class="rules-list">
             <li>役職の【勝利】【スキル】【永続】は、そのカードが公開されている場合のみ有効となります。非公開状態では発動しません。</li>
+            <li><strong>《03. 波及》（スキル03）の裁定:</strong> 「ちょうど1人のプレイヤー」に与えられるダメージでのみ発動します。《05. 暴露》や《06. 奇襲》などの全体効果や、2人以上が同時にダメージを受ける処理では発動しません。</li>
         </ul>
 
         <h2>カード効果のキーワード</h2>
@@ -447,11 +455,12 @@ function renderRole(container, role) {
 
 function renderSkill(container, skill) {
     const catClass = getCategoryClass(skill.category);
+    const skillNo = skill.no ? String(skill.no).padStart(2, '0') : skill.id.replace(/\D/g, '');
     
     container.innerHTML = `
         <div style="margin-bottom: 2rem;">
             <div style="display: flex; align-items: baseline; gap: 1rem; margin-bottom: 0.5rem;">
-                <h1 class="page-title" style="margin-bottom: 0; border: none; padding: 0;">${skill.name}</h1>
+                <h1 class="page-title" style="margin-bottom: 0; border: none; padding: 0;">${skillNo}. ${skill.name}</h1>
                 <span style="font-family: var(--font-heading); color: var(--text-muted); font-size: 1.2rem;">${skill.enName}</span>
             </div>
             <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">

@@ -296,7 +296,7 @@ const gameData = {
     ],
     skills: [
         { 
-            id: "s01", name: "スキル 01", enName: "Skill 01", category: "回復",
+            id: "s01", no: 1, name: "治癒", enName: "Healing", category: "回復",
             effect: "1人：[回復]2", 
             usage: `
                 <div class="tactic-block">
@@ -310,7 +310,7 @@ const gameData = {
             ` 
         },
         { 
-            id: "s02", name: "スキル 02", enName: "Skill 02", category: "全体操作",
+            id: "s02", no: 2, name: "同調", enName: "Sync", category: "全体操作",
             effect: "1人：体力を自分と同じ値にする。", 
             usage: `
                 <div class="tactic-block">
@@ -324,13 +324,14 @@ const gameData = {
             ` 
         },
         { 
-            id: "s03", name: "スキル 03", enName: "Skill 03", category: "全体操作",
-            effect: "全員：次の自分のターン終了時まで、1人以上のプレイヤーに与えられるダメージはすべてのプレイヤーへのダメージとなる。", 
+            id: "s03", no: 3, name: "波及", enName: "Ripple", category: "全体操作",
+            effect: "全員：次の自分のターン終了時まで、ちょうど1人のプレイヤーに与えられるダメージはすべてのプレイヤーへのダメージとなる。", 
             usage: `
                 <div class="tactic-block">
                     <div class="tactic-desc">
                         <ul class="wiki-list">
-                            <li>発動中、誰かへの単体攻撃がすべて全体攻撃になるという影響力を持つカードです。</li>
+                            <li>発動中、誰か1人への単体攻撃がすべて全体攻撃になるという影響力を持つカードです。</li>
+                            <li><strong>※「ちょうど1人」に与えられるダメージでのみ発動します。</strong>スキル05やスキル06など、2人以上を対象とする全体ダメージでは発動しません。</li>
                             <li>狂戦士の攻撃や、スキルによる大ダメージを全体に波及させることで、一気に複数人を脱落させる状況を作り出せます。</li>
                             <li>攻撃者自身も、与えたダメージを受けることになります。</li>
                         </ul>
@@ -339,12 +340,12 @@ const gameData = {
             ` 
         },
         { 
-            id: "s04", name: "スキル 04", enName: "Skill 04", category: "妨害", hidden: true,
+            id: "s04", no: 4, name: "欠番", enName: "Skill 04", category: "妨害", hidden: true,
             effect: "欠番", 
             usage: `このページが見れているのはおかしいよ` 
         },
         { 
-            id: "s05", name: "スキル 05", enName: "Skill 05", category: "妨害",
+            id: "s05", no: 5, name: "暴露", enName: "Exposure", category: "妨害",
             effect: "非公開の役職を持つ全員: 非公開の役職1つにつき[ダメージ]1、発生したダメージにつき、自分は[回復]1", 
             usage: `
                 <div class="tactic-block">
@@ -358,7 +359,7 @@ const gameData = {
             ` 
         },
         { 
-            id: "s06", name: "スキル 06", enName: "Skill 06", category: "攻撃",
+            id: "s06", no: 6, name: "奇襲", enName: "Ambush", category: "攻撃",
             effect: "全員：ダメージを受けていなければ、[ダメージ]4。", 
             usage: `
                 <div class="tactic-block">
@@ -372,7 +373,7 @@ const gameData = {
             ` 
         },
         { 
-            id: "s07", name: "スキル 07", enName: "Skill 07", category: "防御",
+            id: "s07", no: 7, name: "守護", enName: "Protection", category: "防御",
             effect: "自分：次の自分のターン開始時まで、自分はすべてのダメージを受けない。", 
             usage: `
                 <div class="tactic-block">
@@ -386,7 +387,7 @@ const gameData = {
             ` 
         },
         { 
-            id: "s08", name: "スキル 08", enName: "Skill 08", category: "妨害",
+            id: "s08", no: 8, name: "威圧", enName: "Intimidation", category: "妨害",
             effect: "他1人：次の手番で「攻撃」不可。", 
             usage: `
                 <div class="tactic-block">
@@ -400,7 +401,7 @@ const gameData = {
             ` 
         },
         { 
-            id: "s09", name: "スキル 09", enName: "Skill 09", category: "妨害",
+            id: "s09", no: 9, name: "沈黙", enName: "Silence", category: "妨害",
             effect: "全員：次のラウンド終了後まで、役職カードを公開不可。", 
             usage: `
                 <div class="tactic-block">
@@ -415,7 +416,7 @@ const gameData = {
             ` 
         },
         { 
-            id: "s10", name: "スキル 10", enName: "Skill 10", category: "妨害",
+            id: "s10", no: 10, name: "隠蔽", enName: "Veil", category: "妨害",
             effect: "1人：公開されている役職1つを非公開にする。", 
             usage: `
                 <div class="tactic-block">
@@ -430,7 +431,7 @@ const gameData = {
             ` 
         },
         { 
-            id: "s11", name: "スキル 11", enName: "Skill 11", category: "攻撃",
+            id: "s11", no: 11, name: "強撃", enName: "Impact", category: "攻撃",
             effect: "1人：[ダメージ]3", 
             usage: `
                 <div class="tactic-block">
@@ -445,7 +446,7 @@ const gameData = {
             ` 
         },
         { 
-            id: "s12", name: "スキル 12", enName: "Skill 12", category: "全体操作",
+            id: "s12", no: 12, name: "取引", enName: "Trade", category: "全体操作",
             effect: "他1人：非公開の役職1つ または 手札すべてを自分と交換する", 
             usage: `
                 <div class="tactic-block">
@@ -459,7 +460,7 @@ const gameData = {
             ` 
         },
         { 
-            id: "s13", name: "スキル 13", enName: "Skill 13", category: "攻撃",
+            id: "s13", no: 13, name: "断罪", enName: "Judgement", category: "攻撃",
             effect: "体力が最も高い全員：体力を半分(端数切上)にする。", 
             usage: `
                 <div class="tactic-block">
@@ -473,7 +474,7 @@ const gameData = {
             ` 
         },
         { 
-            id: "s14", name: "スキル 14", enName: "Skill 14", category: "攻撃",
+            id: "s14", no: 14, name: "吸収", enName: "Drain", category: "攻撃",
             effect: "他1人：[ダメージ]2。対象が脱落した場合、自分は[回復]1。", 
             usage: `
                 <div class="tactic-block">
@@ -487,12 +488,12 @@ const gameData = {
             ` 
         },
         { 
-            id: "s15", name: "スキル 15", enName: "Skill 15", category: "妨害", hidden: true,
+            id: "s15", no: 15, name: "欠番", enName: "Skill 15", category: "妨害", hidden: true,
             effect: "欠番", 
             usage: `このページが見れているのはおかしいよ` 
         },
         { 
-            id: "s16", name: "スキル 16", enName: "Skill 16", category: "自己強化",
+            id: "s16", no: 16, name: "増幅", enName: "Amplify", category: "自己強化",
             effect: "自分：次に使うスキルカードのダメージ量と回復量がすべて2倍になる。", 
             usage: `
                 <div class="tactic-block">
@@ -507,7 +508,7 @@ const gameData = {
             ` 
         },
         { 
-            id: "s17", name: "スキル 17", enName: "Skill 17", category: "防御",
+            id: "s17", no: 17, name: "隠遁", enName: "Stealth", category: "防御",
             effect: "自分：次の自分のターン開始時まで、いかなる効果の対象にならない。", 
             usage: `
                 <div class="tactic-block">
@@ -521,7 +522,7 @@ const gameData = {
             ` 
         },
         { 
-            id: "s18", name: "スキル 18", enName: "Skill 18", category: "全体操作",
+            id: "s18", no: 18, name: "調和", enName: "Harmony", category: "全体操作",
             effect: "全員：手札3枚以上なら2枚に捨てる。手札1枚以下なら2枚まで引く。", 
             usage: `
                 <div class="tactic-block">
@@ -535,7 +536,7 @@ const gameData = {
             ` 
         },
         { 
-            id: "s19", name: "スキル 19", enName: "Skill 19", category: "全体操作",
+            id: "s19", no: 19, name: "反転", enName: "Reversal", category: "全体操作",
             effect: "他1人：自分と体力を入れ替える。", 
             usage: `
                 <div class="tactic-block">
@@ -549,7 +550,7 @@ const gameData = {
             ` 
         },
         { 
-            id: "s20", name: "スキル 20", enName: "Skill 20", category: "妨害",
+            id: "s20", no: 20, name: "廃棄", enName: "Discard", category: "妨害",
             effect: "1人：手札をすべて捨てる。", 
             usage: `
                 <div class="tactic-block">
