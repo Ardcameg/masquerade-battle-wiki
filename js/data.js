@@ -182,7 +182,7 @@ const gameData = {
             id: "chronos",
             name: "クロノス",
             enName: "Chronos",
-            category: "特殊",
+            category: "トリックスター",
             hp: 4,
             summary: "死を超えろ",
             victory: "脱落時：このターン終了後、追加で自分のターンを行い、自分が他1人以上を脱落させる。そのターン中、与えるすべてのダメージは2倍になる。",
@@ -269,7 +269,7 @@ const gameData = {
             id: "jester",
             name: "ジェスター",
             enName: "The Jester",
-            category: "特殊",
+            category: "トリックスター",
             hp: 4,
             summary: "混沌に陥れろ",
             victory: "脱落時：2番目に脱落しているか、自分を含めて2人以上が脱落した",
@@ -310,7 +310,7 @@ const gameData = {
             ` 
         },
         { 
-            id: "s02", no: 2, name: "同調", enName: "Sync", category: "全体操作",
+            id: "s02", no: 2, name: "同調", enName: "Sync", category: "操作",
             effect: "1人：体力を自分と同じ値にする。", 
             usage: `
                 <div class="tactic-block">
@@ -324,7 +324,7 @@ const gameData = {
             ` 
         },
         { 
-            id: "s03", no: 3, name: "波及", enName: "Ripple", category: "全体操作",
+            id: "s03", no: 3, name: "波及", enName: "Ripple", category: "操作",
             effect: "全員：次の自分のターン終了時まで、ちょうど1人のプレイヤーに与えられるダメージはすべてのプレイヤーへのダメージとなる。", 
             usage: `
                 <div class="tactic-block">
@@ -446,7 +446,7 @@ const gameData = {
             ` 
         },
         { 
-            id: "s12", no: 12, name: "取引", enName: "Trade", category: "全体操作",
+            id: "s12", no: 12, name: "取引", enName: "Trade", category: "操作",
             effect: "他1人：非公開の役職1つ または 手札すべてを自分と交換する", 
             usage: `
                 <div class="tactic-block">
@@ -493,7 +493,7 @@ const gameData = {
             usage: `このページが見れているのはおかしいよ` 
         },
         { 
-            id: "s16", no: 16, name: "増幅", enName: "Amplify", category: "自己強化",
+            id: "s16", no: 16, name: "増幅", enName: "Amplify", category: "強化",
             effect: "自分：次に使うスキルカードのダメージ量と回復量がすべて2倍になる。", 
             usage: `
                 <div class="tactic-block">
@@ -522,7 +522,7 @@ const gameData = {
             ` 
         },
         { 
-            id: "s18", no: 18, name: "調和", enName: "Harmony", category: "全体操作",
+            id: "s18", no: 18, name: "調和", enName: "Harmony", category: "操作",
             effect: "全員：手札3枚以上なら2枚に捨てる。手札1枚以下なら2枚まで引く。", 
             usage: `
                 <div class="tactic-block">
@@ -536,7 +536,7 @@ const gameData = {
             ` 
         },
         { 
-            id: "s19", no: 19, name: "反転", enName: "Reversal", category: "全体操作",
+            id: "s19", no: 19, name: "反転", enName: "Reversal", category: "操作",
             effect: "他1人：自分と体力を入れ替える。", 
             usage: `
                 <div class="tactic-block">

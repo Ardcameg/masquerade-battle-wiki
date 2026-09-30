@@ -23,17 +23,23 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 const categoryClassMap = {
+    // 役職 (Roles)
     "アタッカー": "cat-attacker",
     "サポート": "cat-support",
     "コントロール": "cat-control",
-    "特殊": "cat-trickster",
+    "トリックスター": "cat-trickster",
     "タンク": "cat-tank",
-    "回復": "cat-heal",
-    "防御": "cat-tank",
+    "特殊": "cat-trickster", // 互換用
+    
+    // スキル (Skills)
     "攻撃": "cat-attacker",
+    "防御": "cat-tank",
+    "回復": "cat-heal",
+    "強化": "cat-special",
     "妨害": "cat-control",
-    "全体操作": "cat-trickster",
-    "自己強化": "cat-special"
+    "操作": "cat-trickster",
+    "全体操作": "cat-trickster", // 互換用
+    "自己強化": "cat-special"  // 互換用
 };
 
 function getCategoryClass(categoryName) {
