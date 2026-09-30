@@ -15,7 +15,7 @@
     --cat-tank: #f57c00;
     --cat-trickster: #7b1fa2;
     --cat-control: #1976d2;
-    --cat-heal: #388e3c;
+    --cat-heal: #4caf50;
     --cat-special: #c4a15a;
 
     --font-heading: 'Cinzel', "Kaisei Opti", serif;
@@ -434,14 +434,13 @@ p {
 }
 
 /* Category Colored Badges (Solid) */
-.badge.cat-attacker { color: var(--cat-attacker); border-color: var(--cat-attacker); }
-.badge.cat-support { color: var(--cat-support); border-color: var(--cat-support); }
-.badge.cat-tank { color: var(--cat-tank); border-color: var(--cat-tank); }
-.badge.cat-trickster { color: var(--cat-trickster); border-color: var(--cat-trickster); }
-.badge.cat-control { color: var(--cat-control); border-color: var(--cat-control); }
-.badge.cat-attack-disrupt { color: var(--cat-attacker); border-color: var(--cat-attacker); }
-.badge.cat-defense-heal { color: var(--cat-heal); border-color: var(--cat-heal); }
-.badge.cat-special { color: var(--cat-special); border-color: var(--cat-special); }
+.badge.cat-attacker { color: var(--cat-attacker); border-color: var(--cat-attacker); background: rgba(211, 47, 47, 0.1); }
+.badge.cat-support { color: var(--cat-support); border-color: var(--cat-support); background: rgba(56, 142, 60, 0.1); }
+.badge.cat-tank { color: var(--cat-tank); border-color: var(--cat-tank); background: rgba(245, 124, 0, 0.1); }
+.badge.cat-trickster { color: var(--cat-trickster); border-color: var(--cat-trickster); background: rgba(123, 31, 162, 0.1); }
+.badge.cat-control { color: var(--cat-control); border-color: var(--cat-control); background: rgba(25, 118, 210, 0.1); }
+.badge.cat-heal { color: var(--cat-heal); border-color: var(--cat-heal); background: rgba(76, 175, 80, 0.12); }
+.badge.cat-special { color: var(--cat-special); border-color: var(--cat-special); background: rgba(196, 161, 90, 0.1); }
 
 .badge.ephemeral {
     color: var(--cat-attacker);
