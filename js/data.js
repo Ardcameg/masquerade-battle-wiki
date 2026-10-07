@@ -344,7 +344,7 @@ const gameData = {
             weaknessIcon: "🟢+1",
             hp: 4,
             summary: "混沌に陥れろ",
-            victory: "脱落時：自分を含めて同時に2人以上が脱落した",
+            victory: "脱落時：このラウンド中、既に他プレイヤーが1人以上脱落している",
             skill: "他1人を選び、自分か対象のどちらかを選ぶ。そのプレイヤーの現在の体力を、もう一方と同じにする。",
             passive: null,
             overview: `
