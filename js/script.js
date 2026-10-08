@@ -269,7 +269,7 @@ function renderRules(container) {
         <h2>スキルカードのルール</h2>
         <div class="ability-section">
             <ul class="rules-list">
-                <li><strong>「Aするとき：〇〇」と書かれたカード（割り込み・リアクション）:</strong>
+                <li><strong>「Aするとき：〇〇」と書かれたカード:</strong>
                     <ul class="wiki-list" style="margin-top: 0.3rem;">
                         <li>誰かがAを行うときのみ使用でき、割り込みで効果が発動する。</li>
                         <li>発動後、捨て札になる。</li>
