@@ -318,6 +318,7 @@ function renderRules(container) {
             <h4>4. ラウンド開始</h4>
             <ul class="rules-list">
                 <li>ラウンドを開始する。</li>
+                <li>手札ドラフトを行う：自分の手札から1枚選び、それ以外をすべて左隣のプレイヤーにそのまま渡す。</li>
                 <li>スタートプレイヤーのターンとなる。</li>
             </ul>
         </div>
@@ -349,8 +350,8 @@ function renderRules(container) {
         <div class="ability-section">
             <h4>6. ラウンド終了</h4>
             <ul class="rules-list">
-                <li>ラウンド終了後、自分の手札から1枚選び、それ以外をすべて左隣のプレイヤーにそのまま渡す。</li>
-                <li>スタートプレイヤーをターンが次のプレイヤーに回し、ラウンドを最初から行う。</li>
+                <li>ラウンド終了時の勝利条件を満たしたプレイヤーがいるか判定する。満たしたプレイヤーがいればゲームを終了する。</li>
+                <li>スタートプレイヤーを次のプレイヤーに回し、次のラウンドを開始する。</li>
             </ul>
         </div>
         <div class="ability-section">
