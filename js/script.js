@@ -23,23 +23,21 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 const categoryClassMap = {
-    // 役職 (Roles)
+    // 役職
     "アタッカー": "cat-attacker",
     "サポート": "cat-support",
     "コントロール": "cat-control",
     "トリックスター": "cat-trickster",
     "タンク": "cat-tank",
-    "特殊": "cat-trickster", // 互換用
+    "特殊": "cat-trickster",
     
-    // スキル (Skills)
+    // スキル
     "攻撃": "cat-attacker",
     "防御": "cat-tank",
     "回復": "cat-heal",
     "強化": "cat-special",
     "妨害": "cat-control",
-    "操作": "cat-trickster",
-    "全体操作": "cat-trickster", // 互換用
-    "自己強化": "cat-special"  // 互換用
+    "操作": "cat-trickster"
 };
 
 function getCategoryClass(categoryName) {
@@ -56,12 +54,11 @@ const categoryColorMap = {
     "cat-special": "var(--cat-special)"
 };
 
-const elementColorMap = {
-    "red": "#ff5252",
-    "green": "#69f0ae",
-    "yellow": "#ffd740",
-    "purple": "#e040fb",
-    "blue": "#40c4ff"
+const hitColorMap = {
+    0: "#69f0ae",
+    1: "#ffd740",
+    2: "#ff9100",
+    3: "#ff5252"
 };
 
 function autoLink(text, currentId = null) {
@@ -71,25 +68,22 @@ function autoLink(text, currentId = null) {
     // Process Roles
     gameData.roles.forEach(r => {
         if (r.id === currentId) return;
-        const regex = new RegExp(`[「《]?${r.name}[」》]?`, 'g');
+        const regex = new RegExp(`[「《]${r.name}[」》]`, 'g');
         result = result.replace(regex, `<a href="#role/${r.id}" class="inline-link">《${r.name}》</a>`);
     });
     
-    // Process Skills
+    // Process Skills: matches 《01. 治癒》, 《1. 治癒》, 《治癒》, 01. 治癒, 《スキル01》, etc.
     gameData.skills.forEach(s => {
         if (s.id === currentId) return;
         const sNum = parseInt(s.id.replace('s', ''), 10);
         const sNoStr = String(sNum).padStart(2, '0');
-        const regex = new RegExp(`[「《]?スキル\\s*(0?${sNum})(?!\\d)[」》]?`, 'g');
+        const regex = new RegExp(`(?:[「《](?:0?${sNum}\\.\\s*)?${s.name}[」》]|[「《]?0?${sNum}\\.\\s*${s.name}[」》]?|[「《]?スキル\\s*0?${sNum}[」》]?)`, 'g');
         result = result.replace(regex, `<a href="#skill/${s.id}" class="inline-link">《${sNoStr}. ${s.name}》</a>`);
-        if (s.name && s.name !== "欠番") {
-            const regexName = new RegExp(`[「《]${s.name}[」》]`, 'g');
-            result = result.replace(regexName, `<a href="#skill/${s.id}" class="inline-link">《${sNoStr}. ${s.name}》</a>`);
-        }
     });
     
-    result = result.replace(/\\[ダメージ\\](\\d+|手札の枚数)/g, '<span class="keyword-damage" title="[ダメージ]X: Xの分だけダメージを受ける">[ダメージ]$1</span>');
-    result = result.replace(/\\[回復\\](\\d+)/g, '<span class="keyword-heal" title="[回復]X: Xの分だけ回復する">[回復]$1</span>');
+    result = result.replace(/\[ダメージ\](\d+|手札の枚数|同じ量)/g, '<span class="keyword-damage" title="[ダメージ]X: Xの分だけダメージを受ける">[ダメージ]$1</span>');
+    result = result.replace(/\[回復\](\d+|同じ量)/g, '<span class="keyword-heal" title="[回復]X: Xの分だけ回復する">[回復]$1</span>');
+    result = result.replace(/\[体力\](\d+)/g, '<span class="keyword-heal">[体力]$1</span>');
 
     return result;
 }
@@ -103,16 +97,16 @@ function initNavigation() {
         .sort((a, b) => (a.no || 0) - (b.no || 0));
 
     sortedRoles.forEach(role => {
-        const elemColor = elementColorMap[role.element] || "var(--border-accent)";
+        const hitColor = hitColorMap[role.hit] || "var(--border-accent)";
 
         const li = document.createElement('li');
-        li.innerHTML = `<a href="#role/${role.id}" class="nav-link" data-id="role/${role.id}" data-color="${elemColor}">
+        li.innerHTML = `<a href="#role/${role.id}" class="nav-link" data-id="role/${role.id}" data-color="${hitColor}">
             <span class="nav-link-text">
                 ${role.no ? `<span class="nav-link-name" style="font-size: 0.75rem; opacity: 0.5; margin-right: 6px;">${String(role.no).padStart(2, '0')}</span>` : ''}
-                <span class="nav-link-name">${role.elementIcon ? `${role.elementIcon} ` : ''}${role.name}</span>
+                <span class="nav-link-name">${role.name}</span>
                 <span class="nav-link-en">${role.enName}</span>
             </span>
-            ${role.elementName ? `<span class="badge elem-${role.element}" style="font-size: 0.6rem; padding: 1px 6px; border-radius: 2px;">${role.elementName}</span>` : ''}
+            <span class="badge" style="font-size: 0.65rem; padding: 1px 6px; border-radius: 2px; border: 1px solid ${hitColor}; color: ${hitColor};">Hit: ${role.hit}</span>
         </a>`;
         rolesNav.appendChild(li);
     });
@@ -244,42 +238,57 @@ function renderRules(container) {
         </div>
 
         <h2>ゲームの目的 / 勝利条件</h2>
-        <p>以下のどちらかを満たせば勝利となりゲームが終了します。</p>
+        <p>以下のどちらかを満たせば勝利となりゲームが終了する。</p>
         <ul class="rules-list">
             <li>すべての他プレイヤーの体力を0にする（自分だけ生き残る）。</li>
             <li>公開されている自身の役職の固有勝利条件を満たす。</li>
         </ul>
 
-        <h2>属性および弱点について</h2>
+        <h2>体力（HP）について</h2>
         <div class="ability-section">
             <ul class="rules-list">
-                <li>役職には、🔴🔵🟡🟢🟣のうちどれかの属性が1つついている。</li>
-                <li>「🔴+1」などとある場合、🔴属性の役職から受けるダメージが+1される。</li>
-                <li>役職が公開されていれば、2役職でそれぞれの属性で判断され、この効果は重複します。</li>
+                <li>各プレイヤーには、HP 10が与えられる。</li>
+                <li>最大体力の制限はなく、回復によって11以上になることも可能。</li>
             </ul>
-            <div class="element-affinity-box" style="margin-top: 0.8rem;">
-                <span style="color: #ff5252; font-weight: bold;">🔴 赤</span> は <span style="color: #69f0ae; font-weight: bold;">🟢 緑</span> に強い（🟢は🔴弱点）<br>
-                <span style="color: #69f0ae; font-weight: bold;">🟢 緑</span> は <span style="color: #e040fb; font-weight: bold;">🟣 紫</span> に強い（🟣は🟢弱点）<br>
-                <span style="color: #e040fb; font-weight: bold;">🟣 紫</span> は <span style="color: #ffd740; font-weight: bold;">🟡 黄</span> に強い（🟡は🟣弱点）<br>
-                <span style="color: #ffd740; font-weight: bold;">🟡 黄</span> は <span style="color: #40c4ff; font-weight: bold;">🔵 青</span> に強い（🔵は🟡弱点）<br>
-                <span style="color: #40c4ff; font-weight: bold;">🔵 青</span> は <span style="color: #ff5252; font-weight: bold;">🔴 赤</span> に強い（🔴は🔵弱点）
+        </div>
+
+        <h2>Hit と「攻撃」アクション</h2>
+        <div class="ability-section">
+            <ul class="rules-list">
+                <li>各役職には、<strong>「Hit」</strong>という数値（0〜3）が設定されている。</li>
+                <li>各プレイヤーのHit合計は、現在<strong>公開されている役職のHitの合計</strong>となる（非公開の役職のHitは0として計算する）。</li>
+                <li><strong>アクションB「攻撃」の処理:</strong>
+                    <ol class="wiki-list" style="margin-top: 0.3rem;">
+                        <li>6面ダイスを振る。</li>
+                        <li>他プレイヤー全員のうち、<strong>自身のHit合計がダイスの目より小さい（Hit合計 &lt; ダイスの目）全員</strong>は、それぞれのHit合計分のダメージを受ける。</li>
+                        <li>Hit合計が0のプレイヤーは、受けるダメージは0となる。</li>
+                    </ol>
+                </li>
+            </ul>
+            <div style="background: rgba(255, 255, 255, 0.05); padding: 0.8rem; border-radius: 4px; border-left: 3px solid var(--border-accent); margin-top: 0.8rem; font-size: 0.9rem;">
+                <strong>各役職のHit一覧:</strong><br>
+                ・狂戦士: <strong>0</strong><br>
+                ・暗殺者 / 爆弾魔 / 盗賊 / 道化師: <strong>1</strong><br>
+                ・聖女 / 告発者 / クロノス / 死霊術師: <strong>2</strong><br>
+                ・ゴーレム: <strong>3</strong>
             </div>
         </div>
 
         <h2>スキルカードのルール</h2>
         <div class="ability-section">
             <ul class="rules-list">
-                <li><strong>「Aするとき：〇〇」と書かれたカード（割り込み・リアクション）:</strong>
+                <li><strong>「Aするとき：〇〇」と書かれたカード（割り込み）:</strong>
                     <ul class="wiki-list" style="margin-top: 0.3rem;">
                         <li>誰かがAを行うときのみ使用でき、割り込みで効果が発動する。</li>
                         <li>発動後、捨て札になる。</li>
-                        <li>複数使用された場合、<strong>最後に発動したもののみ効果が発動する</strong>。</li>
+                        <li>対象が同じである効果に連鎖的に使用された場合、発動した順番にすべての効果が発動する。</li>
+                        <li>発動タイミングが同じだった場合、手番のプレイヤーから時計回りに近い順に効果が発動する。</li>
                         <li>通常のターンアクションとして素出しすることはできない。</li>
                     </ul>
                 </li>
                 <li><strong>効果が2つ書いてあるもの:</strong>
                     <ul class="wiki-list" style="margin-top: 0.3rem;">
-                        <li>そのうちどちらかしか発動できない。</li>
+                        <li>そのうちどちらか1つを選択して発動する。</li>
                     </ul>
                 </li>
             </ul>
@@ -289,57 +298,34 @@ function renderRules(container) {
         <div class="ability-section">
             <h4>1. ゲーム開始処理</h4>
             <ul class="rules-list">
-                <li>役職カードをシャッフルして、1人2枚ずつ分け、自分の前に置く。</li>
-                <li>スキルカードをシャッフルし、1人3枚ずつ手札として分ける。余ったものは中央に置き、山札とする。</li>
-                <li>サマリーカードを各プレイヤーに配る。</li>
-                <li>プレイヤーは、役職カードのうち、1枚を選んで公開する。
-                    <ul class="wiki-list" style="margin-top: 0.3rem;">
-                        <li>各プレイヤーの最大体力は、所持する役職カード2枚の最大体力の合計である。</li>
-                        <li>非公開の役職の最大体力は常に5として扱う。</li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-        <div class="ability-section">
-            <h4>2. ゲーム開始</h4>
-            <ul class="rules-list">
                 <li>スタートプレイヤーを決める。</li>
+                <li>スタートプレイヤーの逆順に、10役職の中から公開する役職を1枚選ぶ。全員が選び終わったら、残りからランダムに1枚ずつ非公開で配る（この時点で選んだ役職は公開しておく）。</li>
+                <li>スキルカードをシャッフルし、1人3枚ずつ手札として分ける。余ったものは中央に置き、山札とする。</li>
+                <li>サマリーカードを各プレイヤーに配る。各プレイヤーには、HP 10が与えられる。</li>
             </ul>
         </div>
         <div class="ability-section">
-            <h4>3. 最初のラウンド</h4>
-            <ul class="rules-list">
-                <li>最初のラウンドでは、スタートプレイヤーから役職を公開するアクションのみができる。</li>
-                <li>【スキル】が有れば発動し、【永続】や【勝利】も有効となる。</li>
-                <li>それ以外のアクションはできず、手札ドラフトも発生しない。</li>
-            </ul>
-        </div>
-        <div class="ability-section">
-            <h4>4. ラウンド開始</h4>
+            <h4>2. ラウンド開始</h4>
             <ul class="rules-list">
                 <li>ラウンドを開始する。</li>
-                <li>手札ドラフトを行う：自分の手札から1枚選び、それ以外をすべて左隣のプレイヤーにそのまま渡す。</li>
                 <li>スタートプレイヤーのターンとなる。</li>
             </ul>
         </div>
         <div class="ability-section">
-            <h4>5. プレイヤーターン</h4>
+            <h4>3. プレイヤーターン</h4>
             <p>プレイヤーのターンでは、以下のアクションから1つを選んで行う。行ったなら、ターンを終了し、次のプレイヤーのターンになる。</p>
             <ol class="rules-list" type="A">
                 <li><strong>スキルカードを使う</strong>
                     <p>手札から1枚使い、効果を処理する。使ったカードは捨て札にする。</p>
                 </li>
-                <li><strong>他プレイヤー1人を「攻撃」する</strong>
-                    <p>体力が0のプレイヤーには「攻撃」できない。<br>
-                    対象となるプレイヤーに2ダメージを与える。</p>
+                <li><strong>「攻撃」する</strong>
+                    <p>6面ダイスを振る。他者全員のうち、公開役職の「Hit」の合計がダイスの目より小さい全員は、それぞれの「Hit」の合計分のダメージを受ける。（※非公開の役職のHitは0として計算する）</p>
                 </li>
                 <li><strong>集中する</strong>
-                    <p>山札からスキルカードを2枚引き、手札に加える。その後、手札から1枚選んで捨て札にする。<br>
-                    山札が切れたなら、捨て札をシャッフルし、新たな山札にする。</p>
+                    <p>山札からスキルカードを2枚引き、そのうちから1枚使う。山札が切れたなら、捨て札をシャッフルし、新たな山札にする。</p>
                 </li>
                 <li><strong>役職を公開する</strong>
-                    <p>非公開状態から公開状態になった時、【スキル】を発動する。<br>
-                    公開している間、その役職の【勝利】【永続】が有効になる。</p>
+                    <p>非公開状態から公開状態になった時、【スキル】を発動する。公開している間、その役職の【勝利】【永続】が有効になる。</p>
                 </li>
             </ol>
             <p style="font-size: 0.9em; color: var(--text-muted); margin-top: 0.5rem;">
@@ -348,23 +334,22 @@ function renderRules(container) {
             </p>
         </div>
         <div class="ability-section">
-            <h4>6. ラウンド終了</h4>
+            <h4>4. ラウンド終了</h4>
             <ul class="rules-list">
-                <li>ラウンド終了時の勝利条件を満たしたプレイヤーがいるか判定する。満たしたプレイヤーがいればゲームを終了する。</li>
-                <li>スタートプレイヤーを次のプレイヤーに回し、次のラウンドを開始する。</li>
+                <li>スタートプレイヤーを時計回りで次のプレイヤーに回し、次のラウンドを開始する。</li>
             </ul>
         </div>
         <div class="ability-section">
-            <h4>7. ゲーム終了</h4>
+            <h4>5. ゲーム終了 & 勝利優先度</h4>
             <ul class="rules-list">
-                <li>プレイヤーが以下の勝利条件のどれかを満たしたなら、ゲームを終了する。</li>
+                <li>プレイヤーが勝利条件のどれかを満たしたなら、ゲームを終了する。</li>
             </ul>
-            <div class="priority-box" style="margin-top: 2rem;">
+            <div class="priority-box" style="margin-top: 1.5rem;">
                 <h4 style="color: #fff; margin-bottom: 0.3rem; font-family: var(--font-heading);">勝利優先度について</h4>
                 <p style="font-size: 0.85rem;">複数のプレイヤーが同時に勝利条件を満たした場合、上から順に勝利が優先される。勝利優先度が同じプレイヤーが複数勝利条件を満たした場合、全員勝利となる。</p>
                 <ol style="margin-left: 1.5rem; color: var(--border-accent); margin-top: 0.5rem; font-size: 0.9rem;">
-                    <li><strong>脱落したプレイヤー</strong></li>
-                    <li><strong>脱落させたプレイヤー</strong></li>
+                    <li><strong>脱落したプレイヤー（道化師など）</strong></li>
+                    <li><strong>脱落させたプレイヤー（クロノスなど）</strong></li>
                     <li><strong>その他のプレイヤー</strong></li>
                 </ol>
             </div>
@@ -375,59 +360,38 @@ function renderRules(container) {
 function renderAdvancedRules(container) {
     container.innerHTML = `
         <h1 class="page-title">詳細なゲーム仕様・裁定</h1>
-        <p>ここでは、より複雑な処理や、ゲーム内の用語の厳密な定義について解説します。<br>
-        大して読む必要はないです</p>
+        <p>ここでは、システム全般の処理や用語の厳密な定義について解説します。<br>
+        各スキルカード固有の裁定は、それぞれのカード個別ページに記載されています。</p>
 
-        <h2>ステータスに関する裁定</h2>
+        <h2>Hit と「攻撃」アクションに関する裁定</h2>
         <ul class="rules-list">
-            <li>各プレイヤーの最大体力は、所持する役職カード2枚の最大体力の合計です。</li>
-            <li>非公開の役職の最大体力は常に「5」として扱い、役職をまったく公開していないプレイヤーの最大体力は「10」として扱います。</li>
-            <li>何らかの理由で現在の体力が最大体力を上回った場合、最大体力へ切り捨てます。それ以外で最大体力が変わっても、現在の体力を受け継ぎます。</li>
-        </ul>
-
-        <h2>属性と弱点に関する裁定</h2>
-        <ul class="rules-list">
-            <li><strong>弱点の計算順序:</strong> 弱点によるダメージ増加（+1）は、役職の永続能力（ゴーレムの受けるダメージ上限2など）やスキル（増幅などによる倍加）が適用された<strong>後の最終ダメージ計算時</strong>に加算されます。<br>
-            <span style="color: var(--text-muted); font-size: 0.9em;">
-            ※例: 狂戦士（🔴属性・与ダメ+2）が通常攻撃（2点+狂戦士永続2点=4点）を、🔴弱点を持つゴーレム（🟢属性・被ダメ上限2）に与える場合：ゴーレムの永続上限により4点➔2点となった後、🔴弱点+1が加算され、最終的に「3ダメージ」を受けます。
-            </span>
-            </li>
-            <li><strong>2役職公開時の属性・弱点の重複:</strong>
+            <li><strong>Hitの計算:</strong> 各プレイヤーのHitは、現在公開されている役職のHitの合計値です。非公開役職のHitは0として扱われます。</li>
+            <li><strong>Hitが0のときの被ダメージ:</strong>
                 <ul class="wiki-list">
-                    <li>属性による攻撃力は、属性1つとその弱点属性1つの、2役職の「コンビ」につき1回加算されます。</li>
-                    <li>同属性の役職を2枚公開しているプレイヤーが攻撃する場合、弱点属性を1役職持つプレイヤーには攻撃力が+1、2役職持つプレイヤーには攻撃力が+2されます。</li>
+                    <li>Hit合計が0のプレイヤーに対してダイス攻撃の判定（0 &lt; 出目）が成立した場合でも、受けるダメージ量は「自身のHit合計分」であるため、受けるダメージは0となります。</li>
+                    <li>スキルカードや暗殺者の固有アクションによる直接ダメージは通常通り受けます。</li>
                 </ul>
             </li>
-            <li><strong>非公開役職の属性・弱点:</strong> 非公開状態の役職の属性や弱点は無効です。プレイヤーは公開されている役職の属性・弱点のみを持ちます。</li>
-            <li><strong>ダメージを伴わない効果への影響:</strong> 弱点ボーナスは「ダメージを与える」処理にのみ適用されます。回復や手札交換などの効果には影響しません。</li>
+            <li><strong>攻撃アクションの対象:</strong> ダイスを振ったプレイヤー（攻撃者）自身は判定対象に含まれません（他者全員が対象）。</li>
         </ul>
 
-        <h2>テキストの対象指定・定義に関する裁定</h2>
+        <h2>役職カードの共通裁定</h2>
         <ul class="rules-list">
-            <li>特に明記されていない限り、「自分」とはそのカードを所持・使用しているプレイヤー自身を指します。<br>また、「他」と書いていなければ、条件を満たしている限り、対象として自分自身も選ぶことができ、自分自身も対象に含まれます。</li>
-            <li><strong>「効果」</strong>とは、スキルカードの効果、および役職の【スキル】や【永続】を指します。「攻撃」アクションや、【勝利】は含まれません。</li>
+            <li><strong>能力の有効化:</strong> 役職カードの【スキル】は非公開から公開になった瞬間に1回発動し、【永続】および【勝利】は公開されている間のみ有効となります。</li>
+            <li><strong>ターン開始時の勝利判定:</strong> 「ターン開始時」に条件を満たしているかを判定します。手番プレイヤーのアクション開始前に勝利が成立します。</li>
+            <li><strong>強制公開された役職:</strong> 告発者のスキルなどにより他者から役職を公開させられた場合でも、その役職の公開時【スキル】は通常通り発動します。</li>
         </ul>
 
-        <h2>スキルカードの割り込み（リアクション）に関する裁定</h2>
+        <h2>スキルカードの割り込み（リアクション）共通裁定</h2>
         <ul class="rules-list">
-            <li><strong>発動タイミング:</strong> 「Aするとき：〇〇」と書かれたスキルカードは、該当するトリガー事象Aが発生した瞬間にのみ手札から割り込んで使用できます。</li>
-            <li><strong>使用について:</strong>ターンの通常のアクションとしては使用できず、トリガーが発生したときのみ使用できます。</li>
-            <li><strong>使用後の処理:</strong> 効果を処理した後、そのカードは通常通り捨て札になります。</li>
-            <li><strong>複数の割り込みが発生した場合の処理:</strong> 割り込みスキルに対して割り込みスキルを使用した場合、<strong>最後に発動したもののみ</strong>が有効となり、その効果を適用します。</li>
-            <li>1つのトリガー事象に対して複数のプレイヤーが割り込みスキルを使用した場合、<strong>その全て</strong>が有効となり、<strong>スタートプレイヤーから手番順に</strong>効果を適用します。</li>
-        </ul>
-
-        <h2>その他の特殊裁定</h2>
-        <ul class="rules-list">
-            <li>役職の【勝利】【スキル】【永続】は、そのカードが公開されている場合のみ有効となります。非公開状態では発動しません。</li>
-            <li><strong>《03. 波及》（スキル03）の裁定:</strong> 「ちょうど1人のプレイヤー」に与えられるダメージでのみ発動します。《06. 奇襲》などの全体効果や、2人以上が同時にダメージを受ける処理では発動しません。</li>
-            <li><strong>《14. 反射》（スキル14）の裁定:</strong> ダメージを受ける直前に割り込み、そのダメージをそのまま攻撃者に与えます。</li>
+            <li><strong>発動タイミング:</strong> 「Aするとき：〇〇」と書かれた効果は、該当する事象Aが発生した瞬間にのみ手札から使用できます。ターンの通常アクションとしては使用できません。</li>
+            <li><strong>連鎖処理:</strong> 同一の事象に対して複数のプレイヤーが割り込みカードを使用した場合、発動順に効果を処理します。発動タイミングが同時の場合は、手番プレイヤーから時計回りに近い順に処理します。</li>
         </ul>
 
         <h2>カード効果のキーワード</h2>
         <ul class="rules-list">
-            <li><strong>[ダメージ]X:</strong> 「Xの分だけダメージを受ける」ことを意味します。</li>
-            <li><strong>[回復]X:</strong> 「Xの分だけ回復する」ことを意味します。</li>
+            <li><strong>[ダメージ]X:</strong> Xの分だけ体力を減少させる。</li>
+            <li><strong>[回復]X:</strong> Xの分だけ体力を増加させる。</li>
         </ul>
     `;
 }
@@ -476,44 +440,28 @@ function triggerGlitchText(element, targetText) {
 }
 
 function renderRole(container, role) {
+    const hitColor = hitColorMap[role.hit] || "var(--border-accent)";
+
     let html = `
         <div style="margin-bottom: 2rem;">
             <div style="display: flex; align-items: baseline; gap: 1rem; margin-bottom: 0.5rem;">
-                <h1 class="page-title" style="margin-bottom: 0; border: none; padding: 0;">${role.elementIcon ? `${role.elementIcon} ` : ''}${role.name}</h1>
+                <h1 class="page-title" style="margin-bottom: 0; border: none; padding: 0;">${role.name}</h1>
                 <span style="font-family: var(--font-heading); color: var(--text-muted); font-size: 1.2rem;">${role.enName}</span>
             </div>
             <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.8rem; flex-wrap: wrap;">
-                ${role.elementName ? `<span class="badge elem-${role.element}">属性: ${role.elementIcon} ${role.elementName}</span>` : ''}
-                ${role.weaknessName ? `<span class="badge elem-${role.weakness}">弱点: ${role.weaknessIcon} (${role.weaknessName})</span>` : ''}
+                <span class="badge" style="border: 1px solid ${hitColor}; color: ${hitColor}; background: rgba(0,0,0,0.3); font-size: 0.85rem; padding: 3px 10px;">Hit: ${role.hit}</span>
             </div>
             ${role.summary ? `<div class="role-flavor" id="role-flavor"></div>` : ''}
-        </div>
-
-        <div class="stat-row">
-            <div class="stat-item">
-                <span class="stat-label">最大体力</span>
-                <span class="stat-value">${role.hp}</span>
-            </div>
-            ${role.elementName ? `
-            <div class="stat-item">
-                <span class="stat-label">属性</span>
-                <span class="stat-value stat-element">${role.elementIcon} ${role.elementName}</span>
-            </div>` : ''}
-            ${role.weaknessName ? `
-            <div class="stat-item">
-                <span class="stat-label">弱点</span>
-                <span class="stat-value stat-weakness">${role.weaknessIcon} <span style="font-size: 0.8rem; color: var(--text-muted);">(${role.weaknessName}から+1)</span></span>
-            </div>` : ''}
         </div>
 
         <div class="detail-card">
     `;
 
-    if(role.victory){
+    if (role.victory) {
         html += `
             <div class="victory-section ability-section">
                 <h4>固有勝利条件</h4>
-                <p>${autoLink(role.victory, role.id)}</p>
+                <p style="font-size: 1.1rem; color: #fff;">${autoLink(role.victory, role.id)}</p>
             </div>
         `;
     }
@@ -522,7 +470,7 @@ function renderRole(container, role) {
         html += `
             <div class="ability-section">
                 <h4>【スキル】</h4>
-                <p>${autoLink(role.skill, role.id)}</p>
+                <p style="font-size: 1.05rem; color: #fff;">${autoLink(role.skill, role.id)}</p>
             </div>
         `;
     }
@@ -530,15 +478,15 @@ function renderRole(container, role) {
     if (role.passive) {
         html += `
             <div class="ability-section">
-                <h4>【永続】</h4>
-                <p>${autoLink(role.passive, role.id)}</p>
+                <h4>【永続】 / 【固有アクション】</h4>
+                <p style="font-size: 1.05rem; color: #fff;">${autoLink(role.passive, role.id)}</p>
             </div>
         `;
     }
 
     html += `
             <div class="tactics-section">
-                <h4>概要・特殊裁定</h4>
+                <h4>概要・仕様</h4>
                 ${autoLink(role.overview, role.id)}
             </div>
             <div class="tactics-section">
@@ -576,9 +524,18 @@ function renderSkill(container, skill) {
 
     if (skill.effect2) {
         effectBlocksHtml += `
-            <div class="ability-section" style="border-left: 3px solid var(--border-accent);">
+            <div class="ability-section" style="border-left: 3px solid #ff7043;">
                 <h4>効果2</h4>
                 <p style="font-size: 1.1rem; color: #fff;">${autoLink(skill.effect2, skill.id)}</p>
+            </div>
+        `;
+    }
+
+    if (skill.ruling) {
+        effectBlocksHtml += `
+            <div class="ability-section" style="border-left: 3px solid var(--border-color); background: rgba(255, 255, 255, 0.02);">
+                <h4>特殊裁定・詳細仕様</h4>
+                <p style="font-size: 0.95rem; color: #ddd;">${autoLink(skill.ruling, skill.id)}</p>
             </div>
         `;
     }
