@@ -285,7 +285,7 @@ function renderRules(container) {
                 </li>
                 <li><strong>「攻撃」する</strong>
                     <p>6面ダイスを振る。<br>
-                    2役職の「Hit」の合計がダイスの目以下である全員は、それぞれの「Hit」の合計分のダメージを受ける。<br>
+                    2役職の「Hit」の合計がダイスの目以下である他全員は、それぞれの「Hit」の合計分のダメージを受ける。<br>
                     <span style="font-size: 0.85em; color: var(--text-muted);">※非公開の役職の「Hit」は0として計算する。</span></p>
                 </li>
                 <li><strong>集中する</strong>
