@@ -384,6 +384,13 @@ function renderAdvancedRules(container) {
             <li><strong>[ダメージ]X:</strong> Xの分だけ体力を減少させる。</li>
             <li><strong>[回復]X:</strong> Xの分だけ体力を増加させる。</li>
         </ul>
+        
+        <h2>ダメージや回復について</h2>
+        <ul class="rules-list">
+            <li>HPを指定の値にする効果は、ダメージや回復とは区別されます。</li>
+            <li>《05.奇襲》などの効果でHPの減少量が《爆弾魔》の勝利条件を超えても勝利できません。</li>
+        </ul>
+        
     `;
 }
 
