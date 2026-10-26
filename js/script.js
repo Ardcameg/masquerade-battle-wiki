@@ -348,7 +348,7 @@ function renderRules(container) {
 }
 
 function renderAdvancedRules(container) {
-    container.innerHTML = `
+    container.innerHTML = autoLink(`
         <h1 class="page-title">詳細なゲーム仕様・裁定</h1>
         <p>ここでは、システム全般の処理や用語の厳密な定義について解説します。<br>
         各スキルカード固有の裁定は、それぞれのカード個別ページに記載されています。</p>
@@ -391,7 +391,7 @@ function renderAdvancedRules(container) {
             <li>《05.奇襲》などの効果でHPの減少量が《爆弾魔》の勝利条件を超えても勝利できません。</li>
         </ul>
         
-    `;
+    `);
 }
 
 let glitchTimer = null;
