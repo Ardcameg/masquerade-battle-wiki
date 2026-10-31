@@ -72,7 +72,7 @@ function autoLink(text, currentId = null) {
         result = result.replace(regex, `<a href="#role/${r.id}" class="inline-link">《${r.name}》</a>`);
     });
     
-    // Process Skills: matches 《01. 治癒》, 《1. 治癒》, 《治癒》, 01. 治癒, 《スキル01》, etc.
+    // Process Skills: matches 《01. 切替》, 《1. 切替》, 《切替》, 01. 切替, 《スキル01》, etc.
     gameData.skills.forEach(s => {
         if (s.id === currentId) return;
         const sNum = parseInt(s.id.replace('s', ''), 10);
@@ -388,7 +388,7 @@ function renderAdvancedRules(container) {
         <h2>ダメージや回復について</h2>
         <ul class="rules-list">
             <li>HPを指定の値にする効果は、ダメージや回復とは区別されます。</li>
-            <li>《05.奇襲》などの効果でHPの減少量が《爆弾魔》の勝利条件を超えても勝利できません。</li>
+            <li>《12. 断罪》などの効果でHPの減少量が《爆弾魔》の勝利条件を超えても勝利できません。</li>
         </ul>
         
     `);
